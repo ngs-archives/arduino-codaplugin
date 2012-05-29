@@ -8,14 +8,14 @@
 
 #import "ArduinoPlugin.h"
 #import "SerialMonitorWindowController.h"
-#import "Port.h"
+#import "SettingsWindowController.h"
 
 @implementation ArduinoPlugin
 
 @synthesize pluginController = _pluginController
 , bundleURL = _bundleURL
 , serialMonitorWindowController = _serialMonitorWindowController
-, port = _port
+, settingsMonitorWindowController = _settingsMonitorWindowController
 ;
 
 #pragma mark - CodaPlugin Methods
@@ -95,7 +95,7 @@
 }
 
 - (void)openSettings:(id)sender {
-  
+  [self.settingsMonitorWindowController showWindow:sender];
 }
 
 #pragma mark - Accessors
@@ -105,6 +105,14 @@
     _serialMonitorWindowController = [[SerialMonitorWindowController alloc] initWithPlugin:self];
   }
   return _serialMonitorWindowController;
+}
+
+
+- (SettingsWindowController *)settingsMonitorWindowController {
+  if(nil==_settingsMonitorWindowController) {
+    _settingsMonitorWindowController = [[SettingsWindowController alloc] initWithPlugin:self];
+  }
+  return _settingsMonitorWindowController;
 }
 
 

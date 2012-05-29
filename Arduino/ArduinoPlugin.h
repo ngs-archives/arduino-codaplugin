@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "CodaPlugInsController.h"
 
-@class SerialMonitorWindowController, Port;
+@class SerialMonitorWindowController, SettingsWindowController;
 @interface ArduinoPlugin : NSObject<CodaPlugIn>
 
 
@@ -19,6 +19,6 @@
 @property (strong) CodaPlugInsController *pluginController;
 @property (strong) NSURL *bundleURL;
 @property (readonly) SerialMonitorWindowController *serialMonitorWindowController;
-@property (strong) Port *port;
+@property (readonly) SettingsWindowController *settingsMonitorWindowController;
 
 @end

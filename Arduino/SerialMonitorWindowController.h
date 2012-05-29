@@ -14,6 +14,7 @@
 - (id)initWithPlugin:(ArduinoPlugin *)plugin;
 
 @property (weak) ArduinoPlugin *plugin;
+
 @property (weak) IBOutlet NSTextField *inputTextField;
 @property (unsafe_unretained) IBOutlet NSTextView *outputTextView;
 @property (weak) IBOutlet NSScrollView *scrollView;
