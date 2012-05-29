@@ -9,6 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "CodaPlugInsController.h"
 
+extern NSString *const ArduinoPluginArduinoLocationKey;
+extern NSString *const ArduinoPluginBoardKey;
+extern NSString *const ArduinoPluginProgrammerKey;
+extern NSString *const ArduinoPluginSerialPortKey;
+
 @class SerialMonitorWindowController, SettingsWindowController;
 @interface ArduinoPlugin : NSObject<CodaPlugIn>
 

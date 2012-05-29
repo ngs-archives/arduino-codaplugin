@@ -21,6 +21,16 @@
 , table = _table
 ;
 
+- (id)initWithContentsOfFile:(NSString *)path {
+  NSError *error = nil;
+  self = [self initWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error]];
+  if(error) {
+    NSLog(@"%@", error);
+    return nil;
+  }
+  return self;
+}
+
 - (id)initWithString:(NSString *)string {
   if(self=[super init]) {
     self.table = [NSMutableDictionary dictionary];
@@ -70,8 +80,24 @@
       }
     }
   }
-  
 }
 
+#pragma mark -
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])buffer count:(NSUInteger)len {
+  return [self.table countByEnumeratingWithState:state objects:buffer count:len];
+}
+
+- (id)objectForKey:(id)key {
+  return [self.table objectForKey:key];
+}
+
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id, id, BOOL *))block {
+  [self.table enumerateKeysAndObjectsUsingBlock:block];
+}
+
+- (NSArray *)allKeys {
+  return [self.table allKeys];
+}
 
 @end

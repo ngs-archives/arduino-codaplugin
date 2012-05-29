@@ -42,7 +42,7 @@
 				<string key="NSClassName">NSApplication</string>
 			</object>
 			<object class="NSWindowTemplate" id="329640514">
-				<int key="NSWindowStyleMask">15</int>
+				<int key="NSWindowStyleMask">3</int>
 				<int key="NSWindowBacking">2</int>
 				<string key="NSWindowRect">{{196, 240}, {440, 165}}</string>
 				<int key="NSWTFlags">611845120</int>
@@ -338,7 +338,6 @@
 							<string key="NSFrame">{{115, 16}, {309, 26}}</string>
 							<reference key="NSSuperview" ref="641505958"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSPopUpButtonCell" key="NSCell" id="549559925">
@@ -439,6 +438,7 @@
 				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
 				<string key="NSMinSize">{440, 187}</string>
 				<string key="NSMaxSize">{440, 187}</string>
+				<string key="NSFrameAutosaveName">ArduinoSettings</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
 			</object>
 		</array>
@@ -491,6 +491,30 @@
 						<reference key="destination" ref="878507621"/>
 					</object>
 					<int key="connectionID">1019</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">boardPopUpButton</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="888243007"/>
+					</object>
+					<int key="connectionID">1020</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">programmerPopUpButton</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="86982378"/>
+					</object>
+					<int key="connectionID">1022</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">serialPortPopUpButton</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="1048652779"/>
+					</object>
+					<int key="connectionID">1024</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -1421,8 +1445,10 @@
 				<string key="1009.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="1010.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="1011.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<boolean value="YES" key="307.IBNSWindowAutoPositionCentersHorizontal"/>
+				<boolean value="YES" key="307.IBNSWindowAutoPositionCentersVertical"/>
 				<string key="307.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<boolean value="YES" key="307.NSWindowTemplate.visibleAtLaunch"/>
+				<boolean value="NO" key="307.NSWindowTemplate.visibleAtLaunch"/>
 				<array class="NSMutableArray" key="308.IBNSViewMetadataConstraints">
 					<reference ref="458635747"/>
 					<reference ref="747305349"/>
@@ -1534,7 +1560,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">1019</int>
+			<int key="maxID">1024</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1562,14 +1588,21 @@
 					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="boardMenu">NSMenu</string>
+						<string key="boardPopUpButton">NSPopUpButton</string>
 						<string key="locationTextField">NSTextField</string>
 						<string key="programmerMenu">NSMenu</string>
+						<string key="programmerPopUpButton">NSPopUpButton</string>
 						<string key="serialPortMenu">NSMenu</string>
+						<string key="serialPortPopUpButton">NSPopUpButton</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="boardMenu">
 							<string key="name">boardMenu</string>
 							<string key="candidateClassName">NSMenu</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="boardPopUpButton">
+							<string key="name">boardPopUpButton</string>
+							<string key="candidateClassName">NSPopUpButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="locationTextField">
 							<string key="name">locationTextField</string>
@@ -1579,9 +1612,17 @@
 							<string key="name">programmerMenu</string>
 							<string key="candidateClassName">NSMenu</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="programmerPopUpButton">
+							<string key="name">programmerPopUpButton</string>
+							<string key="candidateClassName">NSPopUpButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="serialPortMenu">
 							<string key="name">serialPortMenu</string>
 							<string key="candidateClassName">NSMenu</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="serialPortPopUpButton">
+							<string key="name">serialPortPopUpButton</string>
+							<string key="candidateClassName">NSPopUpButton</string>
 						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">

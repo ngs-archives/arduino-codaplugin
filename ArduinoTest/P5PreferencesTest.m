@@ -15,9 +15,15 @@
 @implementation P5PreferencesTest
 
 - (void)testPreferences {
-  NSString *str = [NSString stringNamed:@"preferences.txt" bundleIdentifier:kTestBundleIdentifier];
-  P5Preferences *pref = [[P5Preferences alloc] initWithString:str];
+  NSBundle *testBundle = [NSBundle bundleWithIdentifier:kTestBundleIdentifier];
+  NSString *path = [testBundle pathForNamedAsset:@"preferences.txt"];
+  P5Preferences *pref = [[P5Preferences alloc] initWithContentsOfFile:path];
+
+  STAssertEqualObjects([pref objectForKey:@"board"],
+                       @"uno", @"board = uno");
   
+  STAssertEqualObjects([[pref objectForKey:@"browser"] objectForKey:@"linux"],
+                       @"mozilla", @"browser.linux = mozilla");
 }
 
 @end

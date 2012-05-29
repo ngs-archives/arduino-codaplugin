@@ -10,6 +10,12 @@
 #import "SerialMonitorWindowController.h"
 #import "SettingsWindowController.h"
 
+NSString *const ArduinoPluginArduinoLocationKey = @"ArduinoPluginArduinoLocation";
+NSString *const ArduinoPluginBoardKey = @"ArduinoPluginBoard";
+NSString *const ArduinoPluginProgrammerKey = @"ArduinoPluginProgrammer";
+NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
+
+
 @implementation ArduinoPlugin
 
 @synthesize pluginController = _pluginController
@@ -68,6 +74,12 @@
                        representedObject:nil
                            keyEquivalent:@"$@,"
                               pluginName:self.name];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:
+     [NSDictionary dictionaryWithObjectsAndKeys:
+      @"/Applications/Arduino.app/Contents/Resources/Java", ArduinoPluginArduinoLocationKey,
+      @"uno", ArduinoPluginBoardKey,
+      @"avrispmkii", ArduinoPluginProgrammerKey,
+      nil]];
   }
   return self;
 }

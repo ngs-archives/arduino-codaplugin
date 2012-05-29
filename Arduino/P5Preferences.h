@@ -8,10 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
-@interface P5Preferences : NSObject
+@interface P5Preferences : NSObject<NSFastEnumeration>
 
 @property (strong) NSString *string;
 
 - (id)initWithString:(NSString *)string;
+- (id)initWithContentsOfFile:(NSString *)path;
+- (id)objectForKey:(id)key;
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block;
+- (NSArray *)allKeys;
 
 @end

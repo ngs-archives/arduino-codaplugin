@@ -23,6 +23,7 @@
 		85D2966B1574C8D00078F4F8 /* preferences.txt in Resources */ = {isa = PBXBuildFile; fileRef = 85D2966A1574C8D00078F4F8 /* preferences.txt */; };
 		85D2966E1574C9460078F4F8 /* FoundationNamedAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2966D1574C9460078F4F8 /* FoundationNamedAdditions.m */; };
 		85D296B31574D29D0078F4F8 /* P5Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2964A1574C6F90078F4F8 /* P5Preferences.m */; };
+		85D296B815751DE80078F4F8 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 852FDD1B1573666500719570 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85D296B815751DE80078F4F8 /* IOKit.framework in Frameworks */,
 				85AF87F0156FED4F00B20241 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
