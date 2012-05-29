@@ -24,6 +24,10 @@
 		85D2966E1574C9460078F4F8 /* FoundationNamedAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2966D1574C9460078F4F8 /* FoundationNamedAdditions.m */; };
 		85D296B31574D29D0078F4F8 /* P5Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2964A1574C6F90078F4F8 /* P5Preferences.m */; };
 		85D296B815751DE80078F4F8 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 852FDD1B1573666500719570 /* IOKit.framework */; };
+		85D296BB15752F920078F4F8 /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
+		85D296C5157542CE0078F4F8 /* AVRCompilerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296C4157542CE0078F4F8 /* AVRCompilerTest.m */; };
+		85D296C71575434B0078F4F8 /* Sample.ino in Resources */ = {isa = PBXBuildFile; fileRef = 85D296C61575434B0078F4F8 /* Sample.ino */; };
+		85D296C8157544D90078F4F8 /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +81,11 @@
 		85D2966A1574C8D00078F4F8 /* preferences.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = preferences.txt; sourceTree = "<group>"; };
 		85D2966C1574C9460078F4F8 /* FoundationNamedAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoundationNamedAdditions.h; sourceTree = "<group>"; };
 		85D2966D1574C9460078F4F8 /* FoundationNamedAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoundationNamedAdditions.m; sourceTree = "<group>"; };
+		85D296B915752F920078F4F8 /* AVRCompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVRCompiler.h; sourceTree = "<group>"; };
+		85D296BA15752F920078F4F8 /* AVRCompiler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVRCompiler.m; sourceTree = "<group>"; };
+		85D296C3157542CE0078F4F8 /* AVRCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVRCompilerTest.h; sourceTree = "<group>"; };
+		85D296C4157542CE0078F4F8 /* AVRCompilerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVRCompilerTest.m; sourceTree = "<group>"; };
+		85D296C61575434B0078F4F8 /* Sample.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Sample.ino; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,8 +205,7 @@
 				85AF884A156FEED800B20241 /* ArduinoPlugin.h */,
 				85AF884B156FEED800B20241 /* ArduinoPlugin.m */,
 				852FDD501573709F00719570 /* SerialMonitor */,
-				85D296491574C6F90078F4F8 /* P5Preferences.h */,
-				85D2964A1574C6F90078F4F8 /* P5Preferences.m */,
+				85D296BC15752FB40078F4F8 /* Integration */,
 			);
 			path = Arduino;
 			sourceTree = "<group>";
@@ -228,6 +236,8 @@
 				85D2965A1574C80F0078F4F8 /* Supporting Files */,
 				85D296661574C8470078F4F8 /* P5PreferencesTest.h */,
 				85D296671574C8470078F4F8 /* P5PreferencesTest.m */,
+				85D296C3157542CE0078F4F8 /* AVRCompilerTest.h */,
+				85D296C4157542CE0078F4F8 /* AVRCompilerTest.m */,
 			);
 			path = ArduinoTest;
 			sourceTree = "<group>";
@@ -245,6 +255,7 @@
 		85D296691574C8D00078F4F8 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
+				85D296C61575434B0078F4F8 /* Sample.ino */,
 				85D2966A1574C8D00078F4F8 /* preferences.txt */,
 			);
 			path = Mocks;
@@ -257,6 +268,17 @@
 				85D2966D1574C9460078F4F8 /* FoundationNamedAdditions.m */,
 			);
 			name = Categories;
+			sourceTree = "<group>";
+		};
+		85D296BC15752FB40078F4F8 /* Integration */ = {
+			isa = PBXGroup;
+			children = (
+				85D296491574C6F90078F4F8 /* P5Preferences.h */,
+				85D2964A1574C6F90078F4F8 /* P5Preferences.m */,
+				85D296B915752F920078F4F8 /* AVRCompiler.h */,
+				85D296BA15752F920078F4F8 /* AVRCompiler.m */,
+			);
+			name = Integration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -343,6 +365,7 @@
 			files = (
 				85D2965E1574C80F0078F4F8 /* InfoPlist.strings in Resources */,
 				85D2966B1574C8D00078F4F8 /* preferences.txt in Resources */,
+				85D296C71575434B0078F4F8 /* Sample.ino in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,6 +410,7 @@
 				852FDD591574061000719570 /* Port.m in Sources */,
 				85B909571574B99700B48051 /* SettingsWindowController.m in Sources */,
 				85D2964B1574C6F90078F4F8 /* P5Preferences.m in Sources */,
+				85D296BB15752F920078F4F8 /* AVRCompiler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,9 +418,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85D296C8157544D90078F4F8 /* AVRCompiler.m in Sources */,
 				85D296B31574D29D0078F4F8 /* P5Preferences.m in Sources */,
 				85D296681574C8470078F4F8 /* P5PreferencesTest.m in Sources */,
 				85D2966E1574C9460078F4F8 /* FoundationNamedAdditions.m in Sources */,
+				85D296C5157542CE0078F4F8 /* AVRCompilerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
