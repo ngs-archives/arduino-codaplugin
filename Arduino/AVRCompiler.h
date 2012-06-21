@@ -21,7 +21,8 @@ extern NSString *const AVRCompileException;
 - (NSString *)arduinoPath;
 - (NSString *)variantPath;
 - (NSString *)gccPath;
-- (NSArray *)extraImports;
+- (NSString *)librariesPath;
+- (NSSet *)extraImports;
 - (NSSet *)includePaths;
 
 - (id)initWithPath:(NSString *)path

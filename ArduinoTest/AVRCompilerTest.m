@@ -30,8 +30,9 @@
   NSBundle *testBundle = [NSBundle bundleWithIdentifier:kTestBundleIdentifier];
   NSString *path = [testBundle pathForNamedAsset:@"Sample.ino"];
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
-  NSArray *includes = [compiler extraImports];
-  STAssertEqualObjects(includes, [@"AAA.h BBB.h CCC.h" componentsSeparatedByString:@" "], nil);
+  NSSet *set1 = [compiler extraImports];
+  NSSet *set2 = [NSSet setWithObjects:@"AAA.h", @"BBB.h", @"CCC.h", nil];
+  STAssertEqualObjects(set1, set2, nil);
 }
 
 - (void)testPaths {
@@ -91,6 +92,22 @@
   STAssertEqualObjects(set1, set2, nil);
 }
 
+- (void)textIncludePaths {
+  NSBundle *testBundle = [NSBundle bundleWithIdentifier:kTestBundleIdentifier];
+  NSString *path = [testBundle pathForNamedAsset:@"Sample.ino"];
+  AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
+  NSSet *set1 = nil;
+  NSSet *set2 = nil;
+  set1 = compiler.includePaths;
+  set2 = [NSSet setWithObjects:
+          @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino",
+          @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/variants/standard",
+          @"/Applications/Arduino.app/Contents/Resources/Java/libraries/AAA",
+          @"/Applications/Arduino.app/Contents/Resources/Java/libraries/BBB",
+          @"/Applications/Arduino.app/Contents/Resources/Java/libraries/CCC",
+          nil];
+  STAssertEqualObjects(set1, set2, nil);
+}
 
 
 @end

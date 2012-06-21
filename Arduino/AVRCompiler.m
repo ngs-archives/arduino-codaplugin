@@ -25,11 +25,11 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return nil;
 }
 
-- (NSArray *)extraImports {
+- (NSSet *)extraImports {
   NSError *error = nil;
   NSRegularExpression *re = [[NSRegularExpression alloc] initWithPattern:@"\\s*#include\\s+[<\"](\\S+)[\">]" options:0 error:&error];
   NSArray *m = [re matchesInString:self.source options:0 range:NSMakeRange(0, self.source.length)];
-  __block NSMutableArray *buf = [NSMutableArray array];
+  __block NSMutableSet *buf = [NSMutableSet set];
   [m
    enumerateObjectsWithOptions:NSEnumerationConcurrent
    usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -66,6 +66,10 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return [[[NSUserDefaults standardUserDefaults] valueForKey:ArduinoPluginArduinoLocationKey] stringByAppendingString:@"/hardware/arduino"];
 }
 
+- (NSString *)librariesPath {
+  return [[[NSUserDefaults standardUserDefaults] valueForKey:ArduinoPluginArduinoLocationKey] stringByAppendingString:@"/libraries"];
+}
+
 - (NSString *)pathForPreferenceKey:(NSString *)key inFolder:(NSString *)folder {
   NSString *conf = [self.boardPreferences get:key];
   if(!conf) return nil;
@@ -91,6 +95,9 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   [paths addObject:self.corePath];
   if(self.variantPath)
     [paths addObject:self.variantPath];
+  for (NSString *h in self.extraImports) {
+    [paths addObject:[self.librariesPath stringByAppendingFormat:@"/@", [h stringByReplacingOccurrencesOfString:@".h" withString:@""]]];
+  }
   return [paths copy];
 }
 
