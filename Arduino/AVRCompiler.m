@@ -142,6 +142,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   self.buildQueue = dispatch_queue_create("org.ngsdev.avrcompiler.build-queue", NULL);
   dispatch_async(self.buildQueue, ^{
     self.messages = [NSMutableArray array];
+    [self createFolder:self.buildPath];
     NSString *path = nil;
     for (path in self.includePaths) {
       [self compileFiles:path buildPath:self.buildPath verbose:verbose];
@@ -170,6 +171,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   }
   [args addObject:source];
   [args addObject:[NSString stringWithFormat:@"-o%@", object]];
+  [args addObject:@"2>&1"];
   [task setArguments:args];
   return task;
 }
@@ -198,6 +200,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   [args addObject:source];
   [args addObject:@"-o"];
   [args addObject:object];
+  [args addObject:@"2>&1"];
   [task setArguments:args];
   return task;
 }
@@ -227,6 +230,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   [args addObject:source];
   [args addObject:@"-o"];
   [args addObject:object];
+  [args addObject:@"2>&1"];
   [task setArguments:args];
   return task;
 }
@@ -299,9 +303,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 
 - (void)createFolder:(NSString *)path{
   NSFileManager *manager = [NSFileManager defaultManager];
-  
-  
-  
+  [manager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 }
      
      
