@@ -9,7 +9,10 @@
 #import "AVRCompiler.h"
 #import "P5Preferences.h"
 #import "ArduinoPlugin.h"
+#import "NSString+extension.h"
+
 #define REVISION @"101"
+#define CPP_PREFIX @"#include \"Arduino.h\""
 
 NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompileException";
 
@@ -31,6 +34,18 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 
 - (NSString *)gccppPath {
   return [self.avrBasePath stringByAppendingString:@"/avr-g++"];
+}
+
+- (NSString *)avrarPath {
+  return [self.avrBasePath stringByAppendingString:@"/avr-ar"];
+}
+
+- (NSString *)avrobjcopyPath {
+  return [self.avrBasePath stringByAppendingString:@"/avr-objcopy"];
+}
+
+- (NSString *)runtimeLibraryName {
+  return [self.buildPath stringByAppendingString:@"/core.a"];
 }
 
 - (NSSet *)extraImports {
@@ -110,13 +125,10 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return [self pathForPreferenceKey:@"build.variant" inFolder:@"variants"];
 }
 
-- (NSSet *)includePaths {
+- (NSSet *)importedLibraries {
   NSMutableSet *paths = [NSMutableSet set];
-  [paths addObject:self.corePath];
-  if(self.variantPath)
-    [paths addObject:self.variantPath];
   for (NSString *h in self.extraImports) {
-    [paths addObject:[self.librariesPath stringByAppendingFormat:@"/@", [h stringByReplacingOccurrencesOfString:@".h" withString:@""]]];
+    [paths addObject:[self.librariesPath stringByAppendingFormat:@"/%@", [h stringByReplacingOccurrencesOfString:@".h" withString:@""]]];
   }
   return [paths copy];
 }
@@ -138,181 +150,75 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 
 - (BOOL)compile:(BOOL)verbose {
   if(self.buildQueue)
-  dispatch_suspend(self.buildQueue);
+    dispatch_suspend(self.buildQueue);
   self.buildQueue = dispatch_queue_create("org.ngsdev.avrcompiler.build-queue", NULL);
   dispatch_async(self.buildQueue, ^{
-    self.messages = [NSMutableArray array];
-    [self createFolder:self.buildPath];
+    NSMutableSet *objects = [NSMutableSet set];
+    NSMutableSet *includePaths = nil;
     NSString *path = nil;
-    for (path in self.includePaths) {
-      [self compileFiles:path buildPath:self.buildPath verbose:verbose];
+    NSString *lib = nil;
+    self.messages = [NSMutableArray array];
+    includePaths = [NSMutableSet setWithObject:self.corePath];
+    if(self.variantPath)
+      [includePaths addObject:self.variantPath];
+    [self createFolder:self.buildPath];
+    for (lib in self.importedLibraries) {
+      [includePaths addObject:lib];
     }
+    //
+    // 1. compile the sketch
+    [self writeProgram];
+    [objects unionSet:
+     [self compileFiles:self.buildPath
+              buildPath:self.buildPath
+           includePaths:includePaths
+                verbose:verbose]];
+    //
+    // 2. compile the libraries, outputting .o files to: <buildPath>/<library>/
+    for (lib in self.importedLibraries) {
+      NSString *utilityFolder = [lib stringByAppendingString:@"/utility"];
+      path = [self.buildPath stringByAppendingFormat:@"/%@", [lib lastPathComponent]];
+      [self createFolder:path];
+      [includePaths addObject:utilityFolder];
+      [objects unionSet:
+       [self compileFiles:lib
+                buildPath:path
+             includePaths:includePaths
+                  verbose:verbose]];
+      path = [self.buildPath
+              stringByAppendingFormat:@"/%@/utility",
+              [lib lastPathComponent]];
+      [self createFolder:path];
+      [objects unionSet:
+       [self compileFiles:utilityFolder
+                buildPath:path
+             includePaths:includePaths
+                  verbose:verbose]];
+      [includePaths removeObject:utilityFolder];
+    }
+    //
+    // 3. compile the core, outputting .o files to <buildPath> and then
+    // collecting them into the core.a library file.
+    [self compileRuntimeLibrary:verbose];
+    //
+    // 4. link it all together into the .elf file
+    [self linkObjects:objects];
+    //
+    // 5. extract EEPROM data (from EEMEM directive) to .eep file.
+    [self extractEEPROM];
+    //
+    // 6. build the .hex file
+    [self buildHex];
   });
   return YES;
 }
 
-- (NSTask *)commandCompilerS:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose {
-  NSTask *task = [[NSTask alloc] init];
-  [task setLaunchPath:self.gccPath];
-  NSMutableArray *args = 
-  [NSMutableArray arrayWithObjects:
-   @"-c", // compile, don't link
-   @"-g", // include debugging info (so errors include line numbers)
-   @"-assembler-with-cpp",
-   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
-   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
-   @"-MMD", // output dependancy info
-   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
-   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
-   [@"-DARDUINO=" stringByAppendingString:REVISION],
-   nil];
-  for (NSString *p in self.includePaths) {
-    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
-  }
-  [args addObject:source];
-  [args addObject:[NSString stringWithFormat:@"-o%@", object]];
-  [args addObject:@"2>&1"];
-  [task setArguments:args];
-  return task;
-}
-
-- (NSTask *)commandCompilerC:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose {
-  NSTask *task = [[NSTask alloc] init];
-  [task setLaunchPath:self.gccPath];
-  NSMutableArray *args = 
-  [NSMutableArray arrayWithObjects:
-   @"-c", // compile, don't link
-   @"-g", // include debugging info (so errors include line numbers)
-   @"-Os", // optimize for size
-   verbose ? @"-Wall" : @"-w", // show warnings if verbose
-   @"-ffunction-sections", // place each function in its own section
-   @"-fdata-sections",
-   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
-   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
-   @"-MMD", // output dependancy info
-   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
-   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
-   [@"-DARDUINO=" stringByAppendingString:REVISION],
-   nil];
-  for (NSString *p in self.includePaths) {
-    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
-  }
-  [args addObject:source];
-  [args addObject:@"-o"];
-  [args addObject:object];
-  [args addObject:@"2>&1"];
-  [task setArguments:args];
-  return task;
-}
-
-- (NSTask *)commandCompilerCPP:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose {
-  NSTask *task = [[NSTask alloc] init];
-  [task setLaunchPath:self.gccppPath];
-  NSMutableArray *args = 
-  [NSMutableArray arrayWithObjects:
-   @"-c", // compile, don't link
-   @"-g", // include debugging info (so errors include line numbers)
-   @"-Os", // optimize for size
-   verbose ? @"-Wall" : @"-w", // show warnings if verbose
-   @"-fno-exceptions",
-   @"-ffunction-sections", // place each function in its own section
-   @"-fdata-sections",
-   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
-   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
-   @"-MMD", // output dependancy info
-   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
-   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
-   [@"-DARDUINO=" stringByAppendingString:REVISION],
-   nil];
-  for (NSString *p in self.includePaths) {
-    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
-  }
-  [args addObject:source];
-  [args addObject:@"-o"];
-  [args addObject:object];
-  [args addObject:@"2>&1"];
-  [task setArguments:args];
-  return task;
-}
-
-- (NSArray *)compileFiles:(NSString *)sourcePath buildPath:(NSString *)buildPath verbose:(BOOL)verbose {
-  NSMutableArray *objects = [NSMutableArray array];
-  NSSet *sources = nil;
-  NSPipe *outpipe = nil;
-  NSTask *task = nil;
-  NSString *message = nil;
-  NSString *f = nil;
-  NSString *o = nil;
-  sources = [self fileInPath:sourcePath withExtention:@"S" recursive:NO];
-  for (f in sources) {
-    o = [self objectNameForSource:f];
-    task = [self commandCompilerS:f object:o verbose:verbose];
-    outpipe = [NSPipe pipe];
-    [task setStandardOutput:outpipe];
-    [task launch];
-    [task waitUntilExit];
-    message =
-    [[NSString alloc] initWithData:
-     [[outpipe fileHandleForReading] readDataToEndOfFile]
-                          encoding:NSUTF8StringEncoding];
-    if(message)
-      [self.messages addObject:message];
-    [objects addObject:o];
-  }
-  sources = [self fileInPath:sourcePath withExtention:@"c" recursive:NO];
-  for (f in sources) {
-    o = [self objectNameForSource:f];
-    task = [self commandCompilerC:f object:o verbose:verbose];
-    outpipe = [NSPipe pipe];
-    [task setStandardOutput:outpipe];
-    [task launch];
-    [task waitUntilExit];
-    message =
-    [[NSString alloc] initWithData:
-     [[outpipe fileHandleForReading] readDataToEndOfFile]
-                          encoding:NSUTF8StringEncoding];
-    if(message)
-      [self.messages addObject:message];
-    [objects addObject:o];
-  }
-  sources = [self fileInPath:sourcePath withExtention:@"cpp" recursive:NO];
-  for (f in sources) {
-    o = [self objectNameForSource:f];
-    task = [self commandCompilerCPP:f object:o verbose:verbose];
-    outpipe = [NSPipe pipe];
-    [task setStandardOutput:outpipe];
-    [task launch];
-    [task waitUntilExit];
-    message =
-    [[NSString alloc] initWithData:
-     [[outpipe fileHandleForReading] readDataToEndOfFile]
-                          encoding:NSUTF8StringEncoding];
-    if(message)
-      [self.messages addObject:message];
-    [objects addObject:o];
-  }
-  return [objects copy];
-}
-
-- (NSString *)objectNameForSource:(NSString *)source {
-  NSString *filename = [source lastPathComponent];
-  NSMutableArray *parts = [[filename componentsSeparatedByString:@"."] mutableCopy];
-  [parts replaceObjectAtIndex:parts.count-1 withObject:@"o"];
-  return [self.buildPath stringByAppendingFormat:@"/%@", [parts componentsJoinedByString:@"."]];
-}
-
-- (void)createFolder:(NSString *)path{
-  NSFileManager *manager = [NSFileManager defaultManager];
-  [manager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-}
-     
-     
-
 - (NSSet *)fileInPath:(NSString *)path
-          withExtention:(NSString *)extention
-              recursive:(BOOL)recursive {
+        withExtention:(NSString *)extention
+            recursive:(BOOL)recursive {
   NSMutableSet *set = [NSMutableSet set];
   NSFileManager *manager = [NSFileManager defaultManager];
+  if(![manager fileExistsAtPath:path]) return [set copy];
   NSError *error = nil;
   NSArray *contents = [manager contentsOfDirectoryAtPath:path error:&error];
   if(error)
@@ -332,6 +238,326 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
       [set unionSet:[self fileInPath:fullpath withExtention:extention recursive:YES]];
   }
   return [set copy];
+}
+
+#pragma mark - Private
+
+- (void)compileRuntimeLibrary:(BOOL)verbose {
+  NSSet *includePaths = [NSSet setWithObject:self.corePath];
+  includePaths = [NSMutableSet setWithObject:self.corePath];
+  NSSet *objects = [self compileFiles:self.corePath
+                            buildPath:self.buildPath
+                         includePaths:includePaths
+                              verbose:verbose];
+  for (NSString *obj in objects) {
+    NSTask *task = [[NSTask alloc] init];
+    NSPipe *outpipe = [NSPipe pipe];
+    NSArray *args = [NSArray arrayWithObjects:@"rcs", self.runtimeLibraryName, nil];
+    [task setLaunchPath:self.avrarPath];
+    [task setStandardOutput:outpipe];
+    [task setArguments:args];
+    [task launch];
+    [task waitUntilExit];
+    NSString* message =
+    [[NSString alloc] initWithData:
+     [[outpipe fileHandleForReading] readDataToEndOfFile]
+                          encoding:NSUTF8StringEncoding];
+    if(message&&message.length>0)
+      [self.messages addObject:message];
+  }
+}
+
+- (void)linkObjects:(NSSet *)objects {
+  NSPipe *outpipe = [NSPipe pipe];
+  NSTask *task = [self commandLinkerWithObjectFiles:objects];
+  [task setStandardOutput:outpipe];
+  [task launch];
+  [task waitUntilExit];
+  NSString* message =
+  [[NSString alloc] initWithData:
+   [[outpipe fileHandleForReading] readDataToEndOfFile]
+                        encoding:NSUTF8StringEncoding];
+  if(message&&message.length>0)
+    [self.messages addObject:message];
+  id err = task.standardError;
+  NSTaskTerminationReason r = task.terminationReason;
+  NSLog(@"%@ %ld %@", err, r, task.launchPath);
+}
+
+- (void)extractEEPROM {
+  NSPipe *outpipe = [NSPipe pipe];
+  NSTask *task = [self commandExtractEEPROM];
+  [task setStandardOutput:outpipe];
+  [task launch];
+  [task waitUntilExit];
+  NSString* message =
+  [[NSString alloc] initWithData:
+   [[outpipe fileHandleForReading] readDataToEndOfFile]
+                        encoding:NSUTF8StringEncoding];
+  if(message&&message.length>0)
+    [self.messages addObject:message];
+  id err = task.standardError;
+  NSTaskTerminationReason r = task.terminationReason;
+  NSLog(@"%@ %ld %@", err, r, task.launchPath);
+}
+
+- (void)buildHex {
+  NSPipe *outpipe = [NSPipe pipe];
+  NSTask *task = [self commandBuildHex];
+  [task setStandardOutput:outpipe];
+  [task launch];
+  [task waitUntilExit];
+  NSString* message =
+  [[NSString alloc] initWithData:
+   [[outpipe fileHandleForReading] readDataToEndOfFile]
+                        encoding:NSUTF8StringEncoding];
+  if(message&&message.length>0)
+    [self.messages addObject:message];
+  id err = task.standardError;
+  NSTaskTerminationReason r = task.terminationReason;
+  NSLog(@"%@ %ld", err, r);
+}
+
+- (NSSet *)compileFiles:(NSString *)sourcePath
+              buildPath:(NSString *)buildPath
+           includePaths:(NSSet *)includePaths
+                verbose:(BOOL)verbose {
+  NSMutableSet *objects = [NSMutableSet set];
+  NSSet *sources = nil;
+  NSPipe *outpipe = nil;
+  NSTask *task = nil;
+  NSString *message = nil;
+  NSString *f = nil;
+  NSString *o = nil;
+  sources = [self fileInPath:sourcePath withExtention:@"S" recursive:NO];
+  for (f in sources) {
+    o = [self objectNameForSource:f buildPath:buildPath];
+    task = [self commandCompilerS:f object:o includePaths:includePaths verbose:verbose];
+    outpipe = [NSPipe pipe];
+    [task setStandardOutput:outpipe];
+    [task launch];
+    [task waitUntilExit];
+    message =
+    [[NSString alloc] initWithData:
+     [[outpipe fileHandleForReading] readDataToEndOfFile]
+                          encoding:NSUTF8StringEncoding];
+    if(message&&message.length>0)
+      [self.messages addObject:message];
+    [objects addObject:o];
+  }
+  sources = [self fileInPath:sourcePath withExtention:@"c" recursive:NO];
+  for (f in sources) {
+    o = [self objectNameForSource:f buildPath:buildPath];
+    task = [self commandCompilerC:f object:o includePaths:includePaths verbose:verbose];
+    outpipe = [NSPipe pipe];
+    [task setStandardOutput:outpipe];
+    [task launch];
+    [task waitUntilExit];
+    message =
+    [[NSString alloc] initWithData:
+     [[outpipe fileHandleForReading] readDataToEndOfFile]
+                          encoding:NSUTF8StringEncoding];
+    if(message&&message.length>0)
+      [self.messages addObject:message];
+    [objects addObject:o];
+  }
+  sources = [self fileInPath:sourcePath withExtention:@"cpp" recursive:NO];
+  for (f in sources) {
+    o = [self objectNameForSource:f buildPath:buildPath];
+    task = [self commandCompilerCPP:f object:o includePaths:includePaths verbose:verbose];
+    outpipe = [NSPipe pipe];
+    [task setStandardOutput:outpipe];
+    [task launch];
+    [task waitUntilExit];
+    message =
+    [[NSString alloc] initWithData:
+     [[outpipe fileHandleForReading] readDataToEndOfFile]
+                          encoding:NSUTF8StringEncoding];
+    if(message&&message.length>0)
+      [self.messages addObject:message];
+    [objects addObject:o];
+  }
+  return [objects copy];
+}
+
+- (void)writeProgram {
+  NSString *content = [NSString stringWithFormat:@"%@\n\n%@", CPP_PREFIX, self.source];
+  NSString *output = [self.path replacePathExtension:@"cpp" inDirectory:self.buildPath];
+  NSFileManager *manager = [NSFileManager defaultManager];
+  if([manager fileExistsAtPath:output])
+    [manager removeItemAtPath:output error:nil];
+  [manager createFileAtPath:output contents:[content dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
+}
+
+- (NSString *)objectNameForSource:(NSString *)source buildPath:(NSString *)buildPath {
+  return [source replacePathExtension:@"o" inDirectory:buildPath];
+}
+
+- (void)createFolder:(NSString *)path{
+  NSFileManager *manager = [NSFileManager defaultManager];
+  [manager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+}
+
+#pragma mark - NSTasks
+
+- (NSTask *)commandCompilerS:(NSString *)source
+                      object:(NSString *)object
+                includePaths:(NSSet *)includePaths
+                     verbose:(BOOL)verbose {
+  NSTask *task = [[NSTask alloc] init];
+  [task setLaunchPath:self.gccPath];
+  NSMutableArray *args = 
+  [NSMutableArray arrayWithObjects:
+   @"-c", // compile, don't link
+   @"-g", // include debugging info (so errors include line numbers)
+   @"-assembler-with-cpp",
+   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
+   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
+   @"-MMD", // output dependancy info
+   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
+   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
+   [@"-DARDUINO=" stringByAppendingString:REVISION],
+   nil];
+  for (NSString *p in includePaths) {
+    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
+  }
+  [args addObject:source];
+  [args addObject:[NSString stringWithFormat:@"-o%@", object]];
+  [task setArguments:args];
+  return task;
+}
+
+- (NSTask *)commandCompilerC:(NSString *)source
+                      object:(NSString *)object
+                includePaths:(NSSet *)includePaths
+                     verbose:(BOOL)verbose {
+  NSTask *task = [[NSTask alloc] init];
+  [task setLaunchPath:self.gccPath];
+  NSMutableArray *args = 
+  [NSMutableArray arrayWithObjects:
+   @"-c", // compile, don't link
+   @"-g", // include debugging info (so errors include line numbers)
+   @"-Os", // optimize for size
+   verbose ? @"-Wall" : @"-w", // show warnings if verbose
+   @"-ffunction-sections", // place each function in its own section
+   @"-fdata-sections",
+   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
+   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
+   @"-MMD", // output dependancy info
+   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
+   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
+   [@"-DARDUINO=" stringByAppendingString:REVISION],
+   nil];
+  for (NSString *p in includePaths) {
+    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
+  }
+  [args addObject:source];
+  [args addObject:@"-o"];
+  [args addObject:object];
+  [task setArguments:args];
+  return task;
+}
+
+- (NSTask *)commandCompilerCPP:(NSString *)source
+                        object:(NSString *)object
+                  includePaths:(NSSet *)includePaths
+                       verbose:(BOOL)verbose {
+  NSTask *task = [[NSTask alloc] init];
+  [task setLaunchPath:self.gccppPath];
+  NSMutableArray *args = 
+  [NSMutableArray arrayWithObjects:
+   @"-c", // compile, don't link
+   @"-g", // include debugging info (so errors include line numbers)
+   @"-Os", // optimize for size
+   verbose ? @"-Wall" : @"-w", // show warnings if verbose
+   @"-fno-exceptions",
+   @"-ffunction-sections", // place each function in its own section
+   @"-fdata-sections",
+   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
+   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
+   @"-MMD", // output dependancy info
+   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
+   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
+   [@"-DARDUINO=" stringByAppendingString:REVISION],
+   nil];
+  for (NSString *p in includePaths) {
+    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
+  }
+  [args addObject:source];
+  [args addObject:@"-o"];
+  [args addObject:object];
+  [task setArguments:args];
+  return task;
+}
+
+- (NSTask *)commandLinkerWithObjectFiles:(NSSet *)objects {
+  NSString *optRelax = @"";
+  NSString *mcu = [self.boardPreferences getString:@"build.mcu"];
+  // For atmega2560, need --relax linker option to link larger
+  // programs correctly.
+  if([mcu isEqualToString:@"atmega2560"])
+    optRelax = @",--relax";
+  NSString *output = [self.path replacePathExtension:@"cpp.elf" inDirectory:self.buildPath];
+  NSTask *task = [[NSTask alloc] init];
+  NSMutableArray *args = 
+  [NSMutableArray arrayWithObjects:
+   @"-Os",
+   [NSString stringWithFormat:@"-Wl,--gc-sections%@", optRelax],
+   [NSString stringWithFormat:@"-mmcu=%@", mcu],
+   @"-o",
+   output,
+   nil];
+  for (NSString *o in objects) {
+    [args addObject:o];
+  }
+  [args addObject:self.runtimeLibraryName];
+  [args addObject:[NSString stringWithFormat:@"-L%@", self.buildPath]]; 
+  [args addObject:@"-lm"];
+  [task setLaunchPath:self.gccPath];
+  [task setArguments:args];
+  return task;
+}
+
+// avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 #{name}.cpp.elf #{name}.cpp.eep 
+
+- (NSTask *)commandExtractEEPROM {
+  NSTask *task = [[NSTask alloc] init];
+  NSString *elf = [self.path replacePathExtension:@"cpp.elf" inDirectory:self.buildPath];
+  NSString *eep = [self.path replacePathExtension:@"cpp.eep" inDirectory:self.buildPath];
+  [task setLaunchPath:self.avrobjcopyPath];
+  [task setArguments:
+   [NSArray arrayWithObjects:
+    @"-O",
+    @"ihex",
+    @"-j",
+    @".eeprom",
+    @"--set-section-flags=.eeprom=alloc,load",
+    @"--no-change-warnings",
+    @"--change-section-lma",
+    @".eeprom=0",
+    elf,
+    eep,
+    nil]];
+  return task;
+}
+
+// avr-objcopy -O ihex -R .eeprom #{name}.cpp.elf #{name}.cpp.hex 
+
+- (NSTask *)commandBuildHex {
+  NSTask *task = [[NSTask alloc] init];
+  [task setLaunchPath:self.avrobjcopyPath];
+  NSString *elf = [self.path replacePathExtension:@"cpp.elf" inDirectory:self.buildPath];
+  NSString *hex = [self.path replacePathExtension:@"cpp.hex" inDirectory:self.buildPath];
+  [task setArguments:
+   [NSArray arrayWithObjects:
+    @"-O",
+    @"ihex",
+    @"-R",
+    @".eeprom",
+    elf,
+    hex,
+    nil]];
+  return task;
 }
 
 

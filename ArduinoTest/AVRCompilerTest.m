@@ -95,16 +95,14 @@
   STAssertEqualObjects(set1, set2, nil);
 }
 
-- (void)textIncludePaths {
+- (void)testImportedLibraries {
   NSBundle *testBundle = [NSBundle bundleWithIdentifier:kTestBundleIdentifier];
   NSString *path = [testBundle pathForNamedAsset:@"Sample.ino"];
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
   NSSet *set1 = nil;
   NSSet *set2 = nil;
-  set1 = compiler.includePaths;
+  set1 = compiler.importedLibraries;
   set2 = [NSSet setWithObjects:
-          @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino",
-          @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/variants/standard",
           @"/Applications/Arduino.app/Contents/Resources/Java/libraries/AAA",
           @"/Applications/Arduino.app/Contents/Resources/Java/libraries/BBB",
           @"/Applications/Arduino.app/Contents/Resources/Java/libraries/CCC",
@@ -116,8 +114,8 @@
   NSString *path = @"/Users/foo/Path/To/MyArduinoProject/Simple.ino";
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
   STAssertEqualObjects(
-                       [compiler objectNameForSource:@"/Users/foo/Path/To/MyArduinoProject/lib/Bar.cpp"],
-                       @"/Users/foo/Path/To/MyArduinoProject/build/Bar.o",
+                       [compiler objectNameForSource:@"/Users/foo/Path/To/MyArduinoProject/lib/Bar.cpp" buildPath:@"/Users/foo/Path/To/MyArduinoProject/build/libraries"],
+                       @"/Users/foo/Path/To/MyArduinoProject/build/libraries/Bar.o",
                        nil);
   
   

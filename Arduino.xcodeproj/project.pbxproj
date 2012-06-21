@@ -33,6 +33,9 @@
 		85D296BB15752F920078F4F8 /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
 		85D296C5157542CE0078F4F8 /* AVRCompilerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296C4157542CE0078F4F8 /* AVRCompilerTest.m */; };
 		85D296C71575434B0078F4F8 /* Sample.ino in Resources */ = {isa = PBXBuildFile; fileRef = 85D296C61575434B0078F4F8 /* Sample.ino */; };
+		85D8E6D71593C13700358BBE /* NSString+extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D8E6D61593C13700358BBE /* NSString+extension.m */; };
+		85D8E6DA1593C1B300358BBE /* NSStringExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D8E6D91593C1B300358BBE /* NSStringExtensionTests.m */; };
+		85D8E6DB1593C22800358BBE /* NSString+extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D8E6D61593C13700358BBE /* NSString+extension.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +80,10 @@
 		85D296C3157542CE0078F4F8 /* AVRCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVRCompilerTest.h; sourceTree = "<group>"; };
 		85D296C4157542CE0078F4F8 /* AVRCompilerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVRCompilerTest.m; sourceTree = "<group>"; };
 		85D296C61575434B0078F4F8 /* Sample.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Sample.ino; sourceTree = "<group>"; };
+		85D8E6D51593C13700358BBE /* NSString+extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+extension.h"; sourceTree = "<group>"; };
+		85D8E6D61593C13700358BBE /* NSString+extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+extension.m"; sourceTree = "<group>"; };
+		85D8E6D81593C1B300358BBE /* NSStringExtensionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringExtensionTests.h; sourceTree = "<group>"; };
+		85D8E6D91593C1B300358BBE /* NSStringExtensionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringExtensionTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +233,8 @@
 				85D296671574C8470078F4F8 /* P5PreferencesTest.m */,
 				85D296C3157542CE0078F4F8 /* AVRCompilerTest.h */,
 				85D296C4157542CE0078F4F8 /* AVRCompilerTest.m */,
+				85D8E6D81593C1B300358BBE /* NSStringExtensionTests.h */,
+				85D8E6D91593C1B300358BBE /* NSStringExtensionTests.m */,
 			);
 			path = ArduinoTest;
 			sourceTree = "<group>";
@@ -254,6 +263,8 @@
 			children = (
 				85D2966C1574C9460078F4F8 /* FoundationNamedAdditions.h */,
 				85D2966D1574C9460078F4F8 /* FoundationNamedAdditions.m */,
+				85D8E6D51593C13700358BBE /* NSString+extension.h */,
+				85D8E6D61593C13700358BBE /* NSString+extension.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -398,6 +409,7 @@
 				85B909571574B99700B48051 /* SettingsWindowController.m in Sources */,
 				85D2964B1574C6F90078F4F8 /* P5Preferences.m in Sources */,
 				85D296BB15752F920078F4F8 /* AVRCompiler.m in Sources */,
+				85D8E6D71593C13700358BBE /* NSString+extension.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,6 +417,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85D8E6DB1593C22800358BBE /* NSString+extension.m in Sources */,
 				8541DDB21592D80F00C6936E /* SettingsWindowController.m in Sources */,
 				8541DDB31592D80F00C6936E /* ArduinoPlugin.m in Sources */,
 				8541DDB41592D80F00C6936E /* Port.m in Sources */,
@@ -414,6 +427,7 @@
 				85D2966E1574C9460078F4F8 /* FoundationNamedAdditions.m in Sources */,
 				85D296681574C8470078F4F8 /* P5PreferencesTest.m in Sources */,
 				85D296C5157542CE0078F4F8 /* AVRCompilerTest.m in Sources */,
+				85D8E6DA1593C1B300358BBE /* NSStringExtensionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

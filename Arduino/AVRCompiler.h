@@ -25,26 +25,21 @@ extern NSString *const AVRCompileException;
 - (NSString *)variantPath;
 - (NSString *)gccPath;
 - (NSString *)gccppPath;
+- (NSString *)avrarPath;
+- (NSString *)avrobjcopyPath;
+- (NSString *)runtimeLibraryName;
 - (NSString *)librariesPath;
 - (NSSet *)extraImports;
-- (NSSet *)includePaths;
+- (NSSet *)importedLibraries;
 - (NSString *)avrBasePath;
 - (NSString *)hardwarePath;
 - (NSString *)currentMessage;
-- (NSString *)objectNameForSource:(NSString *)source;
+- (NSString *)objectNameForSource:(NSString *)source buildPath:(NSString *)buildPath;
 
 - (id)initWithPath:(NSString *)path
   boardPreferences:(P5Preferences *)boardPreferences;
 
 - (BOOL)compile:(BOOL)verbose;
-
-- (NSTask *)commandCompilerS:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose;
-
-- (NSTask *)commandCompilerC:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose;
-
-- (NSTask *)commandCompilerCPP:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose;
-
-- (void)createFolder:(NSString *)path;
 
 - (NSSet *)fileInPath:(NSString *)path
           withExtention:(NSString *)extention
