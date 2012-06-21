@@ -9,20 +9,28 @@
 #import "AVRCompiler.h"
 #import "P5Preferences.h"
 #import "ArduinoPlugin.h"
+#define REVISION @"101"
 
 NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompileException";
 
 @implementation AVRCompiler
 
 @synthesize path = _path
+, buildPath = _buildPath
 , boardPreferences = _boardPreferences
 , source = _source
+, messages = _messages
+, buildQueue = _buildQueue
 ;
 
 #pragma mark - Accessors
 
 - (NSString *)gccPath {
-  return nil;
+  return [self.avrBasePath stringByAppendingString:@"/avr-gcc"];
+}
+
+- (NSString *)gccppPath {
+  return [self.avrBasePath stringByAppendingString:@"/avr-g++"];
 }
 
 - (NSSet *)extraImports {
@@ -46,6 +54,10 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   NSError *error = nil;
   _source = [[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
   if(error) NSLog(@"%@", error);
+  NSURL *URL = [NSURL fileURLWithPath:path];
+  NSMutableArray *comps = [[URL pathComponents] mutableCopy];
+  [comps replaceObjectAtIndex:comps.count-1 withObject:@"build"];
+  self.buildPath = [[NSURL fileURLWithPathComponents:comps] path];
 }
 
 - (NSString *)path {
@@ -63,11 +75,19 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 }
 
 - (NSString *)arduinoPath {
-  return [[[NSUserDefaults standardUserDefaults] valueForKey:ArduinoPluginArduinoLocationKey] stringByAppendingString:@"/hardware/arduino"];
+  return [self.hardwarePath stringByAppendingString:@"/arduino"];
 }
 
 - (NSString *)librariesPath {
   return [[[NSUserDefaults standardUserDefaults] valueForKey:ArduinoPluginArduinoLocationKey] stringByAppendingString:@"/libraries"];
+}
+
+- (NSString *)avrBasePath {
+  return [self.hardwarePath stringByAppendingString:@"/tools/avr/bin"];
+}
+
+- (NSString *)hardwarePath {
+  return [[[NSUserDefaults standardUserDefaults] valueForKey:ArduinoPluginArduinoLocationKey] stringByAppendingString:@"/hardware"];
 }
 
 - (NSString *)pathForPreferenceKey:(NSString *)key inFolder:(NSString *)folder {
@@ -101,6 +121,10 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return [paths copy];
 }
 
+- (NSString *)currentMessage {
+  return [self.messages lastObject];
+}
+
 #pragma mark -
 
 - (id)initWithPath:(NSString *)path
@@ -113,26 +137,174 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 }
 
 - (BOOL)compile:(BOOL)verbose {
-  
-  
+  if(self.buildQueue)
+  dispatch_suspend(self.buildQueue);
+  self.buildQueue = dispatch_queue_create("org.ngsdev.avrcompiler.build-queue", NULL);
+  dispatch_async(self.buildQueue, ^{
+    self.messages = [NSMutableArray array];
+    NSString *path = nil;
+    for (path in self.includePaths) {
+      [self compileFiles:path buildPath:self.buildPath verbose:verbose];
+    }
+  });
   return YES;
 }
 
-- (NSArray *)commandCompilerS:(BOOL)verbose {
-  return nil;
+- (NSTask *)commandCompilerS:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose {
+  NSTask *task = [[NSTask alloc] init];
+  [task setLaunchPath:self.gccPath];
+  NSMutableArray *args = 
+  [NSMutableArray arrayWithObjects:
+   @"-c", // compile, don't link
+   @"-g", // include debugging info (so errors include line numbers)
+   @"-assembler-with-cpp",
+   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
+   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
+   @"-MMD", // output dependancy info
+   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
+   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
+   [@"-DARDUINO=" stringByAppendingString:REVISION],
+   nil];
+  for (NSString *p in self.includePaths) {
+    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
+  }
+  [args addObject:source];
+  [args addObject:[NSString stringWithFormat:@"-o%@", object]];
+  [task setArguments:args];
+  return task;
 }
 
-- (NSArray *)commandCompilerC:(BOOL)verbose {
-  return nil;
+- (NSTask *)commandCompilerC:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose {
+  NSTask *task = [[NSTask alloc] init];
+  [task setLaunchPath:self.gccPath];
+  NSMutableArray *args = 
+  [NSMutableArray arrayWithObjects:
+   @"-c", // compile, don't link
+   @"-g", // include debugging info (so errors include line numbers)
+   @"-Os", // optimize for size
+   verbose ? @"-Wall" : @"-w", // show warnings if verbose
+   @"-ffunction-sections", // place each function in its own section
+   @"-fdata-sections",
+   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
+   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
+   @"-MMD", // output dependancy info
+   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
+   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
+   [@"-DARDUINO=" stringByAppendingString:REVISION],
+   nil];
+  for (NSString *p in self.includePaths) {
+    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
+  }
+  [args addObject:source];
+  [args addObject:@"-o"];
+  [args addObject:object];
+  [task setArguments:args];
+  return task;
 }
 
-+ (NSArray *)commandCompilerCPP:(BOOL)verbose {
-  return nil;
+- (NSTask *)commandCompilerCPP:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose {
+  NSTask *task = [[NSTask alloc] init];
+  [task setLaunchPath:self.gccppPath];
+  NSMutableArray *args = 
+  [NSMutableArray arrayWithObjects:
+   @"-c", // compile, don't link
+   @"-g", // include debugging info (so errors include line numbers)
+   @"-Os", // optimize for size
+   verbose ? @"-Wall" : @"-w", // show warnings if verbose
+   @"-fno-exceptions",
+   @"-ffunction-sections", // place each function in its own section
+   @"-fdata-sections",
+   [@"-mmcu=" stringByAppendingString:[self.boardPreferences getString:@"build.mcu"]],
+   [@"-DF_CPU=" stringByAppendingString:[self.boardPreferences getString:@"build.f_cpu"]],
+   @"-MMD", // output dependancy info
+   [@"-DUSB_VID=" stringByAppendingString:[self.boardPreferences getString:@"build.vid"]],
+   [@"-DUSB_PID=" stringByAppendingString:[self.boardPreferences getString:@"build.pid"]],
+   [@"-DARDUINO=" stringByAppendingString:REVISION],
+   nil];
+  for (NSString *p in self.includePaths) {
+    [args addObject:[NSString stringWithFormat:@"-I%@", p]];
+  }
+  [args addObject:source];
+  [args addObject:@"-o"];
+  [args addObject:object];
+  [task setArguments:args];
+  return task;
+}
+
+- (NSArray *)compileFiles:(NSString *)sourcePath buildPath:(NSString *)buildPath verbose:(BOOL)verbose {
+  NSMutableArray *objects = [NSMutableArray array];
+  NSSet *sources = nil;
+  NSPipe *outpipe = nil;
+  NSTask *task = nil;
+  NSString *message = nil;
+  NSString *f = nil;
+  NSString *o = nil;
+  sources = [self fileInPath:sourcePath withExtention:@"S" recursive:NO];
+  for (f in sources) {
+    o = [self objectNameForSource:f];
+    task = [self commandCompilerS:f object:o verbose:verbose];
+    outpipe = [NSPipe pipe];
+    [task setStandardOutput:outpipe];
+    [task launch];
+    [task waitUntilExit];
+    message =
+    [[NSString alloc] initWithData:
+     [[outpipe fileHandleForReading] readDataToEndOfFile]
+                          encoding:NSUTF8StringEncoding];
+    if(message)
+      [self.messages addObject:message];
+    [objects addObject:o];
+  }
+  sources = [self fileInPath:sourcePath withExtention:@"c" recursive:NO];
+  for (f in sources) {
+    o = [self objectNameForSource:f];
+    task = [self commandCompilerC:f object:o verbose:verbose];
+    outpipe = [NSPipe pipe];
+    [task setStandardOutput:outpipe];
+    [task launch];
+    [task waitUntilExit];
+    message =
+    [[NSString alloc] initWithData:
+     [[outpipe fileHandleForReading] readDataToEndOfFile]
+                          encoding:NSUTF8StringEncoding];
+    if(message)
+      [self.messages addObject:message];
+    [objects addObject:o];
+  }
+  sources = [self fileInPath:sourcePath withExtention:@"cpp" recursive:NO];
+  for (f in sources) {
+    o = [self objectNameForSource:f];
+    task = [self commandCompilerCPP:f object:o verbose:verbose];
+    outpipe = [NSPipe pipe];
+    [task setStandardOutput:outpipe];
+    [task launch];
+    [task waitUntilExit];
+    message =
+    [[NSString alloc] initWithData:
+     [[outpipe fileHandleForReading] readDataToEndOfFile]
+                          encoding:NSUTF8StringEncoding];
+    if(message)
+      [self.messages addObject:message];
+    [objects addObject:o];
+  }
+  return [objects copy];
+}
+
+- (NSString *)objectNameForSource:(NSString *)source {
+  NSString *filename = [source lastPathComponent];
+  NSMutableArray *parts = [[filename componentsSeparatedByString:@"."] mutableCopy];
+  [parts replaceObjectAtIndex:parts.count-1 withObject:@"o"];
+  return [self.buildPath stringByAppendingFormat:@"/%@", [parts componentsJoinedByString:@"."]];
 }
 
 - (void)createFolder:(NSString *)path{
+  NSFileManager *manager = [NSFileManager defaultManager];
+  
+  
   
 }
+     
+     
 
 - (NSSet *)fileInPath:(NSString *)path
           withExtention:(NSString *)extention

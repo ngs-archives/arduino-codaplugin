@@ -18,6 +18,7 @@
 - (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block;
 - (NSArray *)allKeys;
 - (id)get:(NSString *)key;
+- (NSString *)getString:(NSString *)key;
 - (P5Preferences *)preferencesForKey:(NSString *)key;
 + (P5Preferences *)boardPreferences;
 + (P5Preferences *)programmerPreferences;

@@ -14,27 +14,35 @@ extern NSString *const AVRCompileException;
 @interface AVRCompiler : NSObject
 
 @property (strong) NSString *path;
+@property (strong) NSString *buildPath;
 @property (readonly) NSString *source;
 @property (strong) P5Preferences *boardPreferences;
+@property (strong) NSMutableArray *messages;
+@property (nonatomic) dispatch_queue_t buildQueue;
 
 - (NSString *)corePath;
 - (NSString *)arduinoPath;
 - (NSString *)variantPath;
 - (NSString *)gccPath;
+- (NSString *)gccppPath;
 - (NSString *)librariesPath;
 - (NSSet *)extraImports;
 - (NSSet *)includePaths;
+- (NSString *)avrBasePath;
+- (NSString *)hardwarePath;
+- (NSString *)currentMessage;
+- (NSString *)objectNameForSource:(NSString *)source;
 
 - (id)initWithPath:(NSString *)path
   boardPreferences:(P5Preferences *)boardPreferences;
 
 - (BOOL)compile:(BOOL)verbose;
 
-- (NSArray *)commandCompilerS:(BOOL)verbose;
+- (NSTask *)commandCompilerS:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose;
 
-- (NSArray *)commandCompilerC:(BOOL)verbose;
+- (NSTask *)commandCompilerC:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose;
 
-+ (NSArray *)commandCompilerCPP:(BOOL)verbose;
+- (NSTask *)commandCompilerCPP:(NSString *)source object:(NSString *)object verbose:(BOOL)verbose;
 
 - (void)createFolder:(NSString *)path;
 

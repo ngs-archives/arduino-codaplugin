@@ -115,6 +115,13 @@
   return ret;
 }
 
+- (NSString *)getString:(NSString *)key {
+  id obj = [self get:key];
+  if(!obj || ![obj isKindOfClass:[NSString class]])
+    obj = @"";
+  return obj;
+}
+
 - (P5Preferences *)preferencesForKey:(NSString *)key {
   P5Preferences *pref = [[P5Preferences alloc] init];
   pref.table = [[self objectForKey:key] mutableCopy];

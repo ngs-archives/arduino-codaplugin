@@ -40,6 +40,9 @@
   NSString *path = [testBundle pathForNamedAsset:@"Sample.ino"];
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
   
+  
+  STAssertEqualObjects(compiler.buildPath, [[testBundle bundlePath] stringByAppendingString:@"/Contents/Resources/build"], nil);
+  
   STAssertEqualObjects(compiler.arduinoPath, @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino", nil);
   STAssertEqualObjects(compiler.corePath, @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino", nil);
   STAssertEqualObjects(compiler.variantPath, @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/variants/standard", nil);
@@ -107,6 +110,17 @@
           @"/Applications/Arduino.app/Contents/Resources/Java/libraries/CCC",
           nil];
   STAssertEqualObjects(set1, set2, nil);
+}
+
+- (void)testObjectName {
+  NSString *path = @"/Users/foo/Path/To/MyArduinoProject/Simple.ino";
+  AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
+  STAssertEqualObjects(
+                       [compiler objectNameForSource:@"/Users/foo/Path/To/MyArduinoProject/lib/Bar.cpp"],
+                       @"/Users/foo/Path/To/MyArduinoProject/build/Bar.o",
+                       nil);
+  
+  
 }
 
 

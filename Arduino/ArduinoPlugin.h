@@ -25,7 +25,7 @@ extern NSString *const ArduinoPluginSerialPortKey;
 @property (strong) NSURL *bundleURL;
 @property (readonly) SerialMonitorWindowController *serialMonitorWindowController;
 @property (readonly) SettingsWindowController *settingsMonitorWindowController;
-@property (strong) void (^)(float progress); progressHandler;
+@property (copy, nonatomic) void (^progressHandler) (float progress);
 
 
 @end

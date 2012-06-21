@@ -9,6 +9,8 @@
 #import "ArduinoPlugin.h"
 #import "SerialMonitorWindowController.h"
 #import "SettingsWindowController.h"
+#import "AVRCompiler.h"
+#import "P5Preferences.h"
 
 NSString *const ArduinoPluginArduinoLocationKey = @"ArduinoPluginArduinoLocation";
 NSString *const ArduinoPluginBoardKey = @"ArduinoPluginBoard";
@@ -22,6 +24,7 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
 , bundleURL = _bundleURL
 , serialMonitorWindowController = _serialMonitorWindowController
 , settingsMonitorWindowController = _settingsMonitorWindowController
+, progressHandler = _progressHandler
 ;
 
 #pragma mark - CodaPlugin Methods
@@ -54,7 +57,7 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
     [aController registerActionWithTitle:NSLocalizedString(@"Compile", nil)
                    underSubmenuWithTitle:nil
                                   target:self
-                                selector:@selector(comppile:)
+                                selector:@selector(compile:)
                        representedObject:nil
                            keyEquivalent:@"$@B"
                               pluginName:self.name];
@@ -98,7 +101,10 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
   
 }
 
-- (void)comppile:(id)sender {
+- (void)compile:(id)sender {
+  NSString *path = [self.pluginController focusedTextView:self].path;
+  AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
+  [compiler compile:YES];
   
 }
 
