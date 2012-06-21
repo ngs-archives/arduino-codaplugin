@@ -8,17 +8,24 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString *const AVRCompileException;
+
+@class P5Preferences;
 @interface AVRCompiler : NSObject
 
 @property (strong) NSString *path;
 @property (readonly) NSString *source;
-@property (strong) NSDictionary *boardPreferences;
+@property (strong) P5Preferences *boardPreferences;
 
+- (NSString *)corePath;
+- (NSString *)arduinoPath;
+- (NSString *)variantPath;
 - (NSString *)gccPath;
 - (NSArray *)extraImports;
+- (NSSet *)includePaths;
 
 - (id)initWithPath:(NSString *)path
-  boardPreferences:(NSDictionary *)boardPreferences;
+  boardPreferences:(P5Preferences *)boardPreferences;
 
 - (BOOL)compile:(BOOL)verbose;
 
@@ -30,9 +37,9 @@
 
 - (void)createFolder:(NSString *)path;
 
-- (NSArray *)fileInFolder:(NSString *)path
-            withExtention:(NSString *)extention
-                recursive:(BOOL)recursive;
+- (NSSet *)fileInPath:(NSString *)path
+          withExtention:(NSString *)extention
+              recursive:(BOOL)recursive;
 
 
 

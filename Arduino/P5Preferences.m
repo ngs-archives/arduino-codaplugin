@@ -7,6 +7,10 @@
 //
 
 #import "P5Preferences.h"
+#import "ArduinoPlugin.h"
+
+#define kBoardsTxtPath @"/hardware/arduino/boards.txt"
+#define kProgrammersTxtPath @"/hardware/arduino/programmers.txt"
 
 @interface P5Preferences ()
 
@@ -98,6 +102,49 @@
 
 - (NSArray *)allKeys {
   return [self.table allKeys];
+}
+
+- (id)get:(NSString *)key {
+  NSArray *keys = [key componentsSeparatedByString:@"."];
+  id ret = nil;
+  for (NSInteger i=0; i<keys.count; i++) {
+    NSString *k = [keys objectAtIndex:i];
+    ret = ret ? [ret objectForKey:k] : [self objectForKey:k];
+    if(!ret) break;
+  }
+  return ret;
+}
+
+- (P5Preferences *)preferencesForKey:(NSString *)key {
+  P5Preferences *pref = [[P5Preferences alloc] init];
+  pref.table = [[self objectForKey:key] mutableCopy];
+  return pref;
+}
+
+#pragma mark -
+
++ (P5Preferences *)boardPreferences {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *loc = [defaults valueForKey:ArduinoPluginArduinoLocationKey];
+  return [[P5Preferences alloc] initWithContentsOfFile:[loc stringByAppendingString:kBoardsTxtPath]];
+}
+
++ (P5Preferences *)programmerPreferences {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *loc = [defaults valueForKey:ArduinoPluginArduinoLocationKey];
+  return [[P5Preferences alloc] initWithContentsOfFile:[loc stringByAppendingString:kProgrammersTxtPath]];
+}
+
++ (P5Preferences *)selectedBoardPreferences {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *key = [defaults valueForKey:ArduinoPluginBoardKey];
+  return [[self boardPreferences] preferencesForKey:key];
+}
+
++ (P5Preferences *)selectedProgrammerPreferences {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *key = [defaults valueForKey:ArduinoPluginProgrammerKey];
+  return [[self boardPreferences] preferencesForKey:key];
 }
 
 @end

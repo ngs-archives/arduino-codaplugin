@@ -12,8 +12,6 @@
 #import <IOKit/IOKitLib.h>
 #import <IOKit/serial/IOSerialKeys.h>
 
-#define kBoardsTxtPath @"/hardware/arduino/boards.txt"
-#define kProgrammersTxtPath @"/hardware/arduino/programmers.txt"
 #define kAvrdudePath @"/hardware/tools/avr/bin/avrdude"
 
 
@@ -83,9 +81,8 @@
 
 - (void)loadPreferences {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  NSString *loc = [defaults valueForKey:ArduinoPluginArduinoLocationKey];
-  self.boardPreferences = [[P5Preferences alloc] initWithContentsOfFile:[loc stringByAppendingString:kBoardsTxtPath]];
-  self.programmerPreferences = [[P5Preferences alloc] initWithContentsOfFile:[loc stringByAppendingString:kProgrammersTxtPath]];
+  self.boardPreferences = [P5Preferences boardPreferences];
+  self.programmerPreferences = [P5Preferences programmerPreferences];
   
   NSInteger idx = 0;
   NSInteger selectedIndex = 0;

@@ -17,5 +17,12 @@
 - (id)objectForKey:(id)key;
 - (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block;
 - (NSArray *)allKeys;
+- (id)get:(NSString *)key;
+- (P5Preferences *)preferencesForKey:(NSString *)key;
+
++ (P5Preferences *)boardPreferences;
++ (P5Preferences *)programmerPreferences;
++ (P5Preferences *)selectedBoardPreferences;
++ (P5Preferences *)selectedProgrammerPreferences;
 
 @end

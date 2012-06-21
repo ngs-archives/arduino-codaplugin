@@ -11,34 +11,29 @@
 		852FDD4D15736F0200719570 /* SerialMonitorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 852FDD4B15736F0200719570 /* SerialMonitorWindowController.m */; };
 		852FDD4E15736F0200719570 /* SerialMonitorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 852FDD4C15736F0200719570 /* SerialMonitorWindow.xib */; };
 		852FDD591574061000719570 /* Port.m in Sources */ = {isa = PBXBuildFile; fileRef = 852FDD581574061000719570 /* Port.m */; };
-		85AF87F0156FED4F00B20241 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85AF87EF156FED4F00B20241 /* Cocoa.framework */; };
+		8541DDAD1592D76F00C6936E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8541DDAC1592D76F00C6936E /* Cocoa.framework */; };
+		8541DDAF1592D78700C6936E /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8541DDAE1592D78700C6936E /* IOKit.framework */; };
+		8541DDB01592D79700C6936E /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8541DDAE1592D78700C6936E /* IOKit.framework */; };
+		8541DDB11592D79700C6936E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8541DDAC1592D76F00C6936E /* Cocoa.framework */; };
+		8541DDB21592D80F00C6936E /* SettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B909551574B99700B48051 /* SettingsWindowController.m */; };
+		8541DDB31592D80F00C6936E /* ArduinoPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 85AF884B156FEED800B20241 /* ArduinoPlugin.m */; };
+		8541DDB41592D80F00C6936E /* Port.m in Sources */ = {isa = PBXBuildFile; fileRef = 852FDD581574061000719570 /* Port.m */; };
+		8541DDB51592D80F00C6936E /* SerialMonitorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 852FDD4B15736F0200719570 /* SerialMonitorWindowController.m */; };
+		8541DDB61592D80F00C6936E /* P5Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2964A1574C6F90078F4F8 /* P5Preferences.m */; };
+		8541DDB71592D80F00C6936E /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
 		85AF884C156FEED800B20241 /* ArduinoPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 85AF884B156FEED800B20241 /* ArduinoPlugin.m */; };
 		85B909571574B99700B48051 /* SettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B909551574B99700B48051 /* SettingsWindowController.m */; };
 		85B909581574B99700B48051 /* SettingsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85B909561574B99700B48051 /* SettingsWindow.xib */; };
 		85D2964B1574C6F90078F4F8 /* P5Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2964A1574C6F90078F4F8 /* P5Preferences.m */; };
 		85D296541574C80F0078F4F8 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D296531574C80F0078F4F8 /* SenTestingKit.framework */; };
-		85D296561574C80F0078F4F8 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D296551574C80F0078F4F8 /* Cocoa.framework */; };
 		85D2965E1574C80F0078F4F8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 85D2965C1574C80F0078F4F8 /* InfoPlist.strings */; };
 		85D296681574C8470078F4F8 /* P5PreferencesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296671574C8470078F4F8 /* P5PreferencesTest.m */; };
 		85D2966B1574C8D00078F4F8 /* preferences.txt in Resources */ = {isa = PBXBuildFile; fileRef = 85D2966A1574C8D00078F4F8 /* preferences.txt */; };
 		85D2966E1574C9460078F4F8 /* FoundationNamedAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2966D1574C9460078F4F8 /* FoundationNamedAdditions.m */; };
-		85D296B31574D29D0078F4F8 /* P5Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2964A1574C6F90078F4F8 /* P5Preferences.m */; };
-		85D296B815751DE80078F4F8 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 852FDD1B1573666500719570 /* IOKit.framework */; };
 		85D296BB15752F920078F4F8 /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
 		85D296C5157542CE0078F4F8 /* AVRCompilerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296C4157542CE0078F4F8 /* AVRCompilerTest.m */; };
 		85D296C71575434B0078F4F8 /* Sample.ino in Resources */ = {isa = PBXBuildFile; fileRef = 85D296C61575434B0078F4F8 /* Sample.ino */; };
-		85D296C8157544D90078F4F8 /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		85D296701574C9A90078F4F8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 85AF87E3156FED4E00B20241 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 85AF87EB156FED4E00B20241;
-			remoteInfo = Arduino;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		85010B5C1572A69C004E0579 /* Bundle-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Bundle-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -49,16 +44,15 @@
 		85010B611572A69C004E0579 /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		85010B631572A69C004E0579 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		85010B661572A69C004E0579 /* CodaPlugInsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CodaPlugInsController.h; sourceTree = "<group>"; };
-		852FDCC4157018EE00719570 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		852FDD1B1573666500719570 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		852FDD4A15736F0200719570 /* SerialMonitorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialMonitorWindowController.h; sourceTree = "<group>"; };
 		852FDD4B15736F0200719570 /* SerialMonitorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SerialMonitorWindowController.m; sourceTree = "<group>"; };
 		852FDD4C15736F0200719570 /* SerialMonitorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SerialMonitorWindow.xib; sourceTree = "<group>"; };
 		852FDD571574061000719570 /* Port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Port.h; sourceTree = "<group>"; };
 		852FDD581574061000719570 /* Port.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Port.m; sourceTree = "<group>"; };
+		8541DD931592D2C000C6936E /* Arduino-UnitTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Arduino-UnitTests.xcconfig"; sourceTree = "<group>"; };
+		8541DDAC1592D76F00C6936E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		8541DDAE1592D78700C6936E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		85AF87EC156FED4F00B20241 /* Arduino.codaplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Arduino.codaplugin; sourceTree = BUILT_PRODUCTS_DIR; };
-		85AF87EF156FED4F00B20241 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		85AF87F4156FED4F00B20241 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		85AF87F7156FED4F00B20241 /* Arduino-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Arduino-Info.plist"; sourceTree = "<group>"; };
 		85AF87FB156FED4F00B20241 /* Arduino-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Arduino-Prefix.pch"; sourceTree = "<group>"; };
 		85AF884A156FEED800B20241 /* ArduinoPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArduinoPlugin.h; sourceTree = "<group>"; };
@@ -70,9 +64,6 @@
 		85D2964A1574C6F90078F4F8 /* P5Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = P5Preferences.m; sourceTree = "<group>"; };
 		85D296521574C80F0078F4F8 /* ArduinoTest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ArduinoTest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		85D296531574C80F0078F4F8 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		85D296551574C80F0078F4F8 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		85D296571574C80F0078F4F8 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		85D296581574C80F0078F4F8 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85D2965B1574C80F0078F4F8 /* ArduinoTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ArduinoTest-Info.plist"; sourceTree = "<group>"; };
 		85D2965D1574C80F0078F4F8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		85D296621574C80F0078F4F8 /* ArduinoTest-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ArduinoTest-Prefix.pch"; sourceTree = "<group>"; };
@@ -93,8 +84,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85D296B815751DE80078F4F8 /* IOKit.framework in Frameworks */,
-				85AF87F0156FED4F00B20241 /* Cocoa.framework in Frameworks */,
+				8541DDAF1592D78700C6936E /* IOKit.framework in Frameworks */,
+				8541DDAD1592D76F00C6936E /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +94,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				85D296541574C80F0078F4F8 /* SenTestingKit.framework in Frameworks */,
-				85D296561574C80F0078F4F8 /* Cocoa.framework in Frameworks */,
+				8541DDB01592D79700C6936E /* IOKit.framework in Frameworks */,
+				8541DDB11592D79700C6936E /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,9 +145,18 @@
 			name = SerialMonitor;
 			sourceTree = "<group>";
 		};
+		8541DD921592D24400C6936E /* Configurations */ = {
+			isa = PBXGroup;
+			children = (
+				8541DD931592D2C000C6936E /* Arduino-UnitTests.xcconfig */,
+			);
+			path = Configurations;
+			sourceTree = "<group>";
+		};
 		85AF87E1156FED4E00B20241 = {
 			isa = PBXGroup;
 			children = (
+				8541DD921592D24400C6936E /* Configurations */,
 				85010B591572A69C004E0579 /* Shared */,
 				85AF87F5156FED4F00B20241 /* Arduino */,
 				85D296591574C80F0078F4F8 /* ArduinoTest */,
@@ -176,24 +177,11 @@
 		85AF87EE156FED4F00B20241 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8541DDAE1592D78700C6936E /* IOKit.framework */,
+				8541DDAC1592D76F00C6936E /* Cocoa.framework */,
 				85D296531574C80F0078F4F8 /* SenTestingKit.framework */,
-				85D296551574C80F0078F4F8 /* Cocoa.framework */,
-				85AF87F1156FED4F00B20241 /* Other Frameworks */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		85AF87F1156FED4F00B20241 /* Other Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				852FDD1B1573666500719570 /* IOKit.framework */,
-				85AF87EF156FED4F00B20241 /* Cocoa.framework */,
-				852FDCC4157018EE00719570 /* WebKit.framework */,
-				85AF87F4156FED4F00B20241 /* Foundation.framework */,
-				85D296571574C80F0078F4F8 /* AppKit.framework */,
-				85D296581574C80F0078F4F8 /* CoreData.framework */,
-			);
-			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
 		85AF87F5156FED4F00B20241 /* Arduino */ = {
@@ -314,7 +302,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				85D296711574C9A90078F4F8 /* PBXTargetDependency */,
 			);
 			name = ArduinoTest;
 			productName = ArduinoTest;
@@ -383,7 +370,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "if [ $INSTALL_BUNDLE == 1 ]; then\nDEST=\"$USER_LIBRARY_DIR/Application Support/Coda 2/Plug-ins/$FULL_PRODUCT_NAME\"\nORG=\"$TARGET_BUILD_DIR/$FULL_PRODUCT_NAME\"\nrm -rf \"$DEST\"\nmv \"$ORG\" \"$DEST\"\nfi\n";
+			shellScript = "if [ $INSTALL_BUNDLE == 1 ]; then\nDEST=\"$USER_LIBRARY_DIR/Application Support/Coda 2/Plug-ins/$FULL_PRODUCT_NAME\"\nORG=\"$TARGET_BUILD_DIR/$FULL_PRODUCT_NAME\"\nrm -rf \"$DEST\"\ncp -R \"$ORG\" \"$DEST\"\nfi\n";
 		};
 		85D296501574C80F0078F4F8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -418,23 +405,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85D296C8157544D90078F4F8 /* AVRCompiler.m in Sources */,
-				85D296B31574D29D0078F4F8 /* P5Preferences.m in Sources */,
-				85D296681574C8470078F4F8 /* P5PreferencesTest.m in Sources */,
+				8541DDB21592D80F00C6936E /* SettingsWindowController.m in Sources */,
+				8541DDB31592D80F00C6936E /* ArduinoPlugin.m in Sources */,
+				8541DDB41592D80F00C6936E /* Port.m in Sources */,
+				8541DDB51592D80F00C6936E /* SerialMonitorWindowController.m in Sources */,
+				8541DDB61592D80F00C6936E /* P5Preferences.m in Sources */,
+				8541DDB71592D80F00C6936E /* AVRCompiler.m in Sources */,
 				85D2966E1574C9460078F4F8 /* FoundationNamedAdditions.m in Sources */,
+				85D296681574C8470078F4F8 /* P5PreferencesTest.m in Sources */,
 				85D296C5157542CE0078F4F8 /* AVRCompilerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		85D296711574C9A90078F4F8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 85AF87EB156FED4E00B20241 /* Arduino */;
-			targetProxy = 85D296701574C9A90078F4F8 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		85010B621572A69C004E0579 /* InfoPlist.strings */ = {
@@ -460,7 +443,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 85010B5F1572A69C004E0579 /* Project-Debug.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Arduino.codaplugin/MacOS/Arduino";
 			};
 			name = Debug;
 		};
@@ -468,7 +450,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 85010B601572A69C004E0579 /* Project-Release.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Arduino.codaplugin/MacOS/Arduino";
 			};
 			name = Release;
 		};
@@ -490,64 +471,15 @@
 		};
 		85D296641574C80F0078F4F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8541DD931592D2C000C6936E /* Arduino-UnitTests.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				BUNDLE_LOADER = "";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "ArduinoTest/ArduinoTest-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "ArduinoTest/ArduinoTest-Info.plist";
-				INSTALL_BUNDLE = 0;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
 		85D296651574C80F0078F4F8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8541DD931592D2C000C6936E /* Arduino-UnitTests.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				BUNDLE_LOADER = "";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "ArduinoTest/ArduinoTest-Prefix.pch";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "ArduinoTest/ArduinoTest-Info.plist";
-				INSTALL_BUNDLE = 0;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};
@@ -579,6 +511,7 @@
 				85D296651574C80F0078F4F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

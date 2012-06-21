@@ -7,6 +7,10 @@
 //
 
 #import "AVRCompiler.h"
+#import "P5Preferences.h"
+#import "ArduinoPlugin.h"
+
+NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompileException";
 
 @implementation AVRCompiler
 
@@ -48,12 +52,52 @@
   return _path;
 }
 
+- (void)setBoardPreferences:(P5Preferences *)boardPreferences {
+  _boardPreferences = boardPreferences;
+}
 
+- (P5Preferences *)boardPreferences {
+  if(nil==_boardPreferences)
+    _boardPreferences = [P5Preferences selectedBoardPreferences];
+  return _boardPreferences;
+}
+
+- (NSString *)arduinoPath {
+  return [[[NSUserDefaults standardUserDefaults] valueForKey:ArduinoPluginArduinoLocationKey] stringByAppendingString:@"/hardware/arduino"];
+}
+
+- (NSString *)pathForPreferenceKey:(NSString *)key inFolder:(NSString *)folder {
+  NSString *conf = [self.boardPreferences get:key];
+  if(!conf) return nil;
+  NSRange range = [conf rangeOfString:@":"];
+  if(range.location != NSNotFound)
+    conf = [conf substringWithRange:NSMakeRange(0, range.location)];
+  return [[self arduinoPath] stringByAppendingFormat:@"/%@/%@",folder,conf];
+}
+
+- (NSString *)corePath {
+  NSString *path = [self pathForPreferenceKey:@"build.core" inFolder:@"cores"];
+  if(!path)
+    [NSException raise:AVRCompileException format:@"No board selected"];
+  return path;
+}
+
+- (NSString *)variantPath {
+  return [self pathForPreferenceKey:@"build.variant" inFolder:@"variants"];
+}
+
+- (NSSet *)includePaths {
+  NSMutableSet *paths = [NSMutableSet set];
+  [paths addObject:self.corePath];
+  if(self.variantPath)
+    [paths addObject:self.variantPath];
+  return [paths copy];
+}
 
 #pragma mark -
 
 - (id)initWithPath:(NSString *)path
-  boardPreferences:(NSDictionary *)boardPreferences {
+  boardPreferences:(P5Preferences *)boardPreferences {
   if(self=[super init]) {
     self.path = path;
     self.boardPreferences = boardPreferences;
@@ -62,6 +106,8 @@
 }
 
 - (BOOL)compile:(BOOL)verbose {
+  
+  
   return YES;
 }
 
@@ -81,10 +127,30 @@
   
 }
 
-- (NSArray *)fileInFolder:(NSString *)path
-            withExtention:(NSString *)extention
-                recursive:(BOOL)recursive {
-  return nil;
+- (NSSet *)fileInPath:(NSString *)path
+          withExtention:(NSString *)extention
+              recursive:(BOOL)recursive {
+  NSMutableSet *set = [NSMutableSet set];
+  NSFileManager *manager = [NSFileManager defaultManager];
+  NSError *error = nil;
+  NSArray *contents = [manager contentsOfDirectoryAtPath:path error:&error];
+  if(error)
+    [NSException raise:error.domain format:error.localizedDescription];
+  for (NSString *filename in contents) {
+    NSString *fullpath = [NSString stringWithFormat:@"%@/%@", path, filename];
+    BOOL isDir = NO;
+    [manager fileExistsAtPath:fullpath isDirectory:&isDir];
+    NSArray *comps = [filename componentsSeparatedByString:@"."];
+    if(!isDir &&
+       (!extention ||
+        (comps.count >= 2 &&
+         [[comps objectAtIndex:0] length] > 0 &&
+         [[[comps lastObject] uppercaseString] isEqualToString:[extention uppercaseString]])))
+      [set addObject:fullpath];
+    else if(isDir && recursive)
+      [set unionSet:[self fileInPath:fullpath withExtention:extention recursive:YES]];
+  }
+  return [set copy];
 }
 
 
