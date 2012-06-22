@@ -26,6 +26,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 , buildQueue = _buildQueue
 , progressHandler = _progressHandler
 , completeHandler = _completeHandler
+, currentProgress = _currentProgress
 ;
 
 #pragma mark - Accessors
@@ -139,6 +140,18 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return [self.messages lastObject];
 }
 
+- (void)setCurrentProgress:(double)currentProgress {
+  _currentProgress = currentProgress;
+  if(self.progressHandler)
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self.progressHandler(currentProgress);
+    });
+}
+
+- (double)currentProgress {
+  return _currentProgress;
+}
+
 #pragma mark -
 
 - (id)initWithPath:(NSString *)path
@@ -150,7 +163,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return self;
 }
 
-- (BOOL)compile:(BOOL)verbose withProgressHandler:(void (^)(float progress))progressHandler completeHandler:(void (^)(void))completeHandler {
+- (BOOL)compile:(BOOL)verbose withProgressHandler:(void (^)(double progress))progressHandler completeHandler:(void (^)(void))completeHandler {
   self.completeHandler = completeHandler;
   self.progressHandler = progressHandler;
   if(self.buildQueue)
@@ -172,15 +185,12 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
     //
     // 1. compile the sketch
     [self writeProgram];
+    self.currentProgress += 0.1;
     [objects unionSet:
      [self compileFiles:self.buildPath
               buildPath:self.buildPath
            includePaths:includePaths
                 verbose:verbose]];
-    if(progressHandler)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        progressHandler(0.1f);
-      });
     //
     // 2. compile the libraries, outputting .o files to: <buildPath>/<library>/
     for (lib in self.importedLibraries) {
@@ -204,43 +214,24 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
                   verbose:verbose]];
       [includePaths removeObject:utilityFolder];
     }
-    if(progressHandler)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        progressHandler(0.25f);
-      });
     //
     // 3. compile the core, outputting .o files to <buildPath> and then
     // collecting them into the core.a library file.
     [self compileRuntimeLibrary:verbose];
-    if(progressHandler)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        progressHandler(0.35f);
-      });
     //
     // 4. link it all together into the .elf file
     [self linkObjects:objects verbose:verbose];
-    if(progressHandler)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        progressHandler(0.5f);
-      });
+    self.currentProgress += 0.1;
     //
     // 5. extract EEPROM data (from EEMEM directive) to .eep file.
     [self extractEEPROM:verbose];
-    if(progressHandler)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        progressHandler(0.7f);
-      });
+    self.currentProgress += 0.1;
     //
     // 6. build the .hex file
     [self buildHex:verbose];
-    if(progressHandler)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        progressHandler(0.8f);
-      });
+    self.currentProgress += 0.1;
     //
     dispatch_async(dispatch_get_main_queue(), ^{
-      if(progressHandler)
-        progressHandler(1.0f);
       if(completeHandler)
         completeHandler();
     });
@@ -291,6 +282,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
     [task setLaunchPath:self.avrarPath];
     [task setArguments:args];
     [self launchTask:task verbose:verbose];
+    self.currentProgress += 1/objects.count/10;
   }
 }
 
@@ -311,11 +303,13 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
            includePaths:(NSSet *)includePaths
                 verbose:(BOOL)verbose {
   NSMutableSet *objects = [NSMutableSet set];
-  NSSet *sources = nil;
+  NSSet *sSources = [self fileInPath:sourcePath withExtention:@"S" recursive:NO];
+  NSSet *cSources = [self fileInPath:sourcePath withExtention:@"c" recursive:NO];
+  NSSet *cppSources = [self fileInPath:sourcePath withExtention:@"cpp" recursive:NO];
   NSString *f = nil;
   NSString *o = nil;
-  sources = [self fileInPath:sourcePath withExtention:@"S" recursive:NO];
-  for (f in sources) {
+  double t = sSources.count + cSources.count + cppSources.count;
+  for (f in sSources) {
     o = [self objectNameForSource:f buildPath:buildPath];
     [self launchTask:
      [self commandCompilerS:f
@@ -324,9 +318,9 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
                     verbose:verbose]
              verbose:verbose];
     [objects addObject:o];
+    self.currentProgress += 1 / t / 10.0;
   }
-  sources = [self fileInPath:sourcePath withExtention:@"c" recursive:NO];
-  for (f in sources) {
+  for (f in cSources) {
     o = [self objectNameForSource:f buildPath:buildPath];
     [self launchTask:
      [self commandCompilerC:f
@@ -335,9 +329,9 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
                     verbose:verbose]
              verbose:verbose];
     [objects addObject:o];
+    self.currentProgress += 1 / t / 10.0;
   }
-  sources = [self fileInPath:sourcePath withExtention:@"cpp" recursive:NO];
-  for (f in sources) {
+  for (f in cppSources) {
     o = [self objectNameForSource:f buildPath:buildPath];
     [self launchTask:
      [self commandCompilerCPP:f
@@ -346,6 +340,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
                       verbose:verbose]
              verbose:verbose];
     [objects addObject:o];
+    self.currentProgress += 1 / t / 10.0;
   }
   return [objects copy];
 }

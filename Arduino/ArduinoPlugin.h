@@ -14,7 +14,7 @@ extern NSString *const ArduinoPluginBoardKey;
 extern NSString *const ArduinoPluginProgrammerKey;
 extern NSString *const ArduinoPluginSerialPortKey;
 
-@class SerialMonitorWindowController, SettingsWindowController;
+@class SerialMonitorWindowController, SettingsWindowController, ProgressWindowController;
 @interface ArduinoPlugin : NSObject<CodaPlugIn>
 
 
@@ -25,6 +25,7 @@ extern NSString *const ArduinoPluginSerialPortKey;
 @property (strong) NSURL *bundleURL;
 @property (readonly) SerialMonitorWindowController *serialMonitorWindowController;
 @property (readonly) SettingsWindowController *settingsMonitorWindowController;
+@property (readonly) ProgressWindowController *progressWindowController;
 @property (copy, nonatomic) void (^progressHandler) (float progress);
 
 

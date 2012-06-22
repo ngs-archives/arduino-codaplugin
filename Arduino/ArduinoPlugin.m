@@ -9,8 +9,10 @@
 #import "ArduinoPlugin.h"
 #import "SerialMonitorWindowController.h"
 #import "SettingsWindowController.h"
+#import "ProgressWindowController.h"
 #import "AVRCompiler.h"
 #import "P5Preferences.h"
+
 
 NSString *const ArduinoPluginArduinoLocationKey = @"ArduinoPluginArduinoLocation";
 NSString *const ArduinoPluginBoardKey = @"ArduinoPluginBoard";
@@ -24,6 +26,7 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
 , bundleURL = _bundleURL
 , serialMonitorWindowController = _serialMonitorWindowController
 , settingsMonitorWindowController = _settingsMonitorWindowController
+, progressWindowController = _progressWindowController
 , progressHandler = _progressHandler
 ;
 
@@ -102,15 +105,21 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
 }
 
 - (void)compile:(id)sender {
+  [self.progressWindowController showWindow:self];
+  [self.progressWindowController.progresIndicator setMaxValue:1.0];
+  [self.progressWindowController.progresIndicator setDoubleValue:0];
+  [self.progressWindowController.progresIndicator setIndeterminate:NO];
   NSString *path = [self.pluginController focusedTextView:self].path;
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
   [compiler
    compile:YES
-   withProgressHandler:^(float progress) {
-     NSLog(@"%f", progress);
+   withProgressHandler:^(double progress) {
+     [self.progressWindowController.progresIndicator setDoubleValue:progress];
+     [self.progressWindowController setOutputText:[compiler.messages componentsJoinedByString:@"\n"]];
    }
    completeHandler:^{
-     NSLog(@"done");
+     [self.progressWindowController.progresIndicator setDoubleValue:1.0];
+     [self.progressWindowController setOutputText:[compiler.messages componentsJoinedByString:@"\n"]];
    }];
   
 }
@@ -130,6 +139,13 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
     _serialMonitorWindowController = [[SerialMonitorWindowController alloc] initWithPlugin:self];
   }
   return _serialMonitorWindowController;
+}
+
+- (ProgressWindowController *)progressWindowController {
+  if(nil==_progressWindowController) {
+    _progressWindowController = [[ProgressWindowController alloc] init];
+  }
+  return _progressWindowController;
 }
 
 

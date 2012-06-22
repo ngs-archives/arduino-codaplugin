@@ -21,6 +21,8 @@
 		8541DDB51592D80F00C6936E /* SerialMonitorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 852FDD4B15736F0200719570 /* SerialMonitorWindowController.m */; };
 		8541DDB61592D80F00C6936E /* P5Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2964A1574C6F90078F4F8 /* P5Preferences.m */; };
 		8541DDB71592D80F00C6936E /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
+		854C33B5159439B6008AE0C0 /* ProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 854C33B3159439B6008AE0C0 /* ProgressWindowController.m */; };
+		854C33B6159439B6008AE0C0 /* ProgressWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 854C33B4159439B6008AE0C0 /* ProgressWindow.xib */; };
 		85AF884C156FEED800B20241 /* ArduinoPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 85AF884B156FEED800B20241 /* ArduinoPlugin.m */; };
 		85B909571574B99700B48051 /* SettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B909551574B99700B48051 /* SettingsWindowController.m */; };
 		85B909581574B99700B48051 /* SettingsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85B909561574B99700B48051 /* SettingsWindow.xib */; };
@@ -55,6 +57,9 @@
 		8541DD931592D2C000C6936E /* Arduino-UnitTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Arduino-UnitTests.xcconfig"; sourceTree = "<group>"; };
 		8541DDAC1592D76F00C6936E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		8541DDAE1592D78700C6936E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		854C33B2159439B6008AE0C0 /* ProgressWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressWindowController.h; sourceTree = "<group>"; };
+		854C33B3159439B6008AE0C0 /* ProgressWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressWindowController.m; sourceTree = "<group>"; };
+		854C33B4159439B6008AE0C0 /* ProgressWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressWindow.xib; sourceTree = "<group>"; };
 		85AF87EC156FED4F00B20241 /* Arduino.codaplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Arduino.codaplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		85AF87F7156FED4F00B20241 /* Arduino-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Arduino-Info.plist"; sourceTree = "<group>"; };
 		85AF87FB156FED4F00B20241 /* Arduino-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Arduino-Prefix.pch"; sourceTree = "<group>"; };
@@ -160,6 +165,16 @@
 			path = Configurations;
 			sourceTree = "<group>";
 		};
+		854C33B015943993008AE0C0 /* ProgressWindow */ = {
+			isa = PBXGroup;
+			children = (
+				854C33B2159439B6008AE0C0 /* ProgressWindowController.h */,
+				854C33B3159439B6008AE0C0 /* ProgressWindowController.m */,
+				854C33B4159439B6008AE0C0 /* ProgressWindow.xib */,
+			);
+			name = ProgressWindow;
+			sourceTree = "<group>";
+		};
 		85AF87E1156FED4E00B20241 = {
 			isa = PBXGroup;
 			children = (
@@ -194,6 +209,7 @@
 		85AF87F5156FED4F00B20241 /* Arduino */ = {
 			isa = PBXGroup;
 			children = (
+				854C33B015943993008AE0C0 /* ProgressWindow */,
 				85D2966F1574C9490078F4F8 /* Categories */,
 				85B909531574B98100B48051 /* Settings */,
 				85AF87F6156FED4F00B20241 /* Supporting Files */,
@@ -354,6 +370,7 @@
 				85010B731572A69C004E0579 /* InfoPlist.strings in Resources */,
 				852FDD4E15736F0200719570 /* SerialMonitorWindow.xib in Resources */,
 				85B909581574B99700B48051 /* SettingsWindow.xib in Resources */,
+				854C33B6159439B6008AE0C0 /* ProgressWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +427,7 @@
 				85D2964B1574C6F90078F4F8 /* P5Preferences.m in Sources */,
 				85D296BB15752F920078F4F8 /* AVRCompiler.m in Sources */,
 				85D8E6D71593C13700358BBE /* NSString+extension.m in Sources */,
+				854C33B5159439B6008AE0C0 /* ProgressWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

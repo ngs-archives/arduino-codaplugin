@@ -19,8 +19,9 @@ extern NSString *const AVRCompileException;
 @property (strong) P5Preferences *boardPreferences;
 @property (strong) NSMutableArray *messages;
 @property (nonatomic) dispatch_queue_t buildQueue;
-@property (copy) void (^progressHandler) (float);
+@property (copy) void (^progressHandler) (double progress);
 @property (copy) void (^completeHandler) (void);
+@property (nonatomic) double currentProgress;
 
 - (NSString *)corePath;
 - (NSString *)arduinoPath;
@@ -41,7 +42,7 @@ extern NSString *const AVRCompileException;
 - (id)initWithPath:(NSString *)path
   boardPreferences:(P5Preferences *)boardPreferences;
 
-- (BOOL)compile:(BOOL)verbose withProgressHandler:(void (^)(float progress))progressHandler completeHandler:(void (^)(void))completeHandler;
+- (BOOL)compile:(BOOL)verbose withProgressHandler:(void (^)(double progress))progressHandler completeHandler:(void (^)(void))completeHandler;
 
 - (NSSet *)fileInPath:(NSString *)path
           withExtention:(NSString *)extention
