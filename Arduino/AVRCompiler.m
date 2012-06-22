@@ -51,6 +51,19 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return [self.buildPath stringByAppendingString:@"/core.a"];
 }
 
+- (NSString *)elfPath {
+  return [self.path replacePathExtension:@"cpp.elf" inDirectory:self.buildPath];
+}
+
+- (NSString *)hexPath {
+  return [self.path replacePathExtension:@"cpp.hex" inDirectory:self.buildPath];
+}
+
+- (NSString *)eepPath {
+  return [self.path replacePathExtension:@"cpp.eep" inDirectory:self.buildPath];
+}
+
+
 - (NSSet *)extraImports {
   NSError *error = nil;
   NSRegularExpression *re = [[NSRegularExpression alloc] initWithPattern:@"\\s*#include\\s+[<\"](\\S+)[\">]" options:0 error:&error];
@@ -472,7 +485,6 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   // programs correctly.
   if([mcu isEqualToString:@"atmega2560"])
     optRelax = @",--relax";
-  NSString *output = [self.path replacePathExtension:@"cpp.elf" inDirectory:self.buildPath];
   NSTask *task = [[NSTask alloc] init];
   NSMutableArray *args = 
   [NSMutableArray arrayWithObjects:
@@ -480,7 +492,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
    [NSString stringWithFormat:@"-Wl,--gc-sections%@", optRelax],
    [NSString stringWithFormat:@"-mmcu=%@", mcu],
    @"-o",
-   output,
+   self.elfPath,
    nil];
   for (NSString *o in objects) {
     [args addObject:o];
@@ -497,8 +509,6 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 
 - (NSTask *)commandExtractEEPROM {
   NSTask *task = [[NSTask alloc] init];
-  NSString *elf = [self.path replacePathExtension:@"cpp.elf" inDirectory:self.buildPath];
-  NSString *eep = [self.path replacePathExtension:@"cpp.eep" inDirectory:self.buildPath];
   [task setLaunchPath:self.avrobjcopyPath];
   [task setArguments:
    [NSArray arrayWithObjects:
@@ -510,8 +520,8 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
     @"--no-change-warnings",
     @"--change-section-lma",
     @".eeprom=0",
-    elf,
-    eep,
+    self.elfPath,
+    self.eepPath,
     nil]];
   return task;
 }
@@ -521,16 +531,14 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 - (NSTask *)commandBuildHex {
   NSTask *task = [[NSTask alloc] init];
   [task setLaunchPath:self.avrobjcopyPath];
-  NSString *elf = [self.path replacePathExtension:@"cpp.elf" inDirectory:self.buildPath];
-  NSString *hex = [self.path replacePathExtension:@"cpp.hex" inDirectory:self.buildPath];
   [task setArguments:
    [NSArray arrayWithObjects:
     @"-O",
     @"ihex",
     @"-R",
     @".eeprom",
-    elf,
-    hex,
+    self.elfPath,
+    self.hexPath,
     nil]];
   return task;
 }
