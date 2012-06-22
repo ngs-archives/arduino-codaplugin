@@ -104,7 +104,14 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
 - (void)compile:(id)sender {
   NSString *path = [self.pluginController focusedTextView:self].path;
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
-  [compiler compile:YES];
+  [compiler
+   compile:YES
+   withProgressHandler:^(float progress) {
+     NSLog(@"%f", progress);
+   }
+   completeHandler:^{
+     NSLog(@"done");
+   }];
   
 }
 

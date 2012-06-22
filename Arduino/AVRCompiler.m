@@ -24,6 +24,8 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 , source = _source
 , messages = _messages
 , buildQueue = _buildQueue
+, progressHandler = _progressHandler
+, completeHandler = _completeHandler
 ;
 
 #pragma mark - Accessors
@@ -148,7 +150,9 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   return self;
 }
 
-- (BOOL)compile:(BOOL)verbose {
+- (BOOL)compile:(BOOL)verbose withProgressHandler:(void (^)(float progress))progressHandler completeHandler:(void (^)(void))completeHandler {
+  self.completeHandler = completeHandler;
+  self.progressHandler = progressHandler;
   if(self.buildQueue)
     dispatch_suspend(self.buildQueue);
   self.buildQueue = dispatch_queue_create("org.ngsdev.avrcompiler.build-queue", NULL);
@@ -173,6 +177,10 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
               buildPath:self.buildPath
            includePaths:includePaths
                 verbose:verbose]];
+    if(progressHandler)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        progressHandler(0.1f);
+      });
     //
     // 2. compile the libraries, outputting .o files to: <buildPath>/<library>/
     for (lib in self.importedLibraries) {
@@ -196,21 +204,46 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
                   verbose:verbose]];
       [includePaths removeObject:utilityFolder];
     }
+    if(progressHandler)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        progressHandler(0.25f);
+      });
     //
     // 3. compile the core, outputting .o files to <buildPath> and then
     // collecting them into the core.a library file.
     [self compileRuntimeLibrary:verbose];
+    if(progressHandler)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        progressHandler(0.35f);
+      });
     //
     // 4. link it all together into the .elf file
     [self linkObjects:objects verbose:verbose];
+    if(progressHandler)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        progressHandler(0.5f);
+      });
     //
     // 5. extract EEPROM data (from EEMEM directive) to .eep file.
     [self extractEEPROM:verbose];
+    if(progressHandler)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        progressHandler(0.7f);
+      });
     //
     // 6. build the .hex file
     [self buildHex:verbose];
+    if(progressHandler)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        progressHandler(0.8f);
+      });
     //
-    NSLog(@"done");
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if(progressHandler)
+        progressHandler(1.0f);
+      if(completeHandler)
+        completeHandler();
+    });
   });
   return YES;
 }
@@ -296,10 +329,10 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   for (f in sources) {
     o = [self objectNameForSource:f buildPath:buildPath];
     [self launchTask:
-             [self commandCompilerC:f
-                             object:o
-                       includePaths:includePaths
-                            verbose:verbose]
+     [self commandCompilerC:f
+                     object:o
+               includePaths:includePaths
+                    verbose:verbose]
              verbose:verbose];
     [objects addObject:o];
   }
