@@ -12,7 +12,7 @@
 #import "NSString+extension.h"
 
 #define REVISION @"101"
-#define CPP_PREFIX @"#include \"Arduino.h\""
+#define CPP_PREFIX @"#include \"Arduino.h\"\nvoid setup();\nvoid loop();"
 
 NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompileException";
 
@@ -202,13 +202,15 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
     [self compileRuntimeLibrary:verbose];
     //
     // 4. link it all together into the .elf file
-    [self linkObjects:objects];
+    [self linkObjects:objects verbose:verbose];
     //
     // 5. extract EEPROM data (from EEMEM directive) to .eep file.
-    [self extractEEPROM];
+    [self extractEEPROM:verbose];
     //
     // 6. build the .hex file
-    [self buildHex];
+    [self buildHex:verbose];
+    //
+    NSLog(@"done");
   });
   return YES;
 }
@@ -243,79 +245,32 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 #pragma mark - Private
 
 - (void)compileRuntimeLibrary:(BOOL)verbose {
-  NSSet *includePaths = [NSSet setWithObject:self.corePath];
-  includePaths = [NSMutableSet setWithObject:self.corePath];
+  NSMutableSet *includePaths = [NSMutableSet setWithObject:self.corePath];
+  if(self.variantPath)
+    [includePaths addObject:self.variantPath];
   NSSet *objects = [self compileFiles:self.corePath
                             buildPath:self.buildPath
                          includePaths:includePaths
                               verbose:verbose];
   for (NSString *obj in objects) {
     NSTask *task = [[NSTask alloc] init];
-    NSPipe *outpipe = [NSPipe pipe];
-    NSArray *args = [NSArray arrayWithObjects:@"rcs", self.runtimeLibraryName, nil];
+    NSArray *args = [NSArray arrayWithObjects:@"rcs", self.runtimeLibraryName, obj, nil];
     [task setLaunchPath:self.avrarPath];
-    [task setStandardOutput:outpipe];
     [task setArguments:args];
-    [task launch];
-    [task waitUntilExit];
-    NSString* message =
-    [[NSString alloc] initWithData:
-     [[outpipe fileHandleForReading] readDataToEndOfFile]
-                          encoding:NSUTF8StringEncoding];
-    if(message&&message.length>0)
-      [self.messages addObject:message];
+    [self launchTask:task verbose:verbose];
   }
 }
 
-- (void)linkObjects:(NSSet *)objects {
-  NSPipe *outpipe = [NSPipe pipe];
-  NSTask *task = [self commandLinkerWithObjectFiles:objects];
-  [task setStandardOutput:outpipe];
-  [task launch];
-  [task waitUntilExit];
-  NSString* message =
-  [[NSString alloc] initWithData:
-   [[outpipe fileHandleForReading] readDataToEndOfFile]
-                        encoding:NSUTF8StringEncoding];
-  if(message&&message.length>0)
-    [self.messages addObject:message];
-  id err = task.standardError;
-  NSTaskTerminationReason r = task.terminationReason;
-  NSLog(@"%@ %ld %@", err, r, task.launchPath);
+- (void)linkObjects:(NSSet *)objects verbose:(BOOL)verbose {
+  [self launchTask:[self commandLinkerWithObjectFiles:objects] verbose:verbose];
 }
 
-- (void)extractEEPROM {
-  NSPipe *outpipe = [NSPipe pipe];
-  NSTask *task = [self commandExtractEEPROM];
-  [task setStandardOutput:outpipe];
-  [task launch];
-  [task waitUntilExit];
-  NSString* message =
-  [[NSString alloc] initWithData:
-   [[outpipe fileHandleForReading] readDataToEndOfFile]
-                        encoding:NSUTF8StringEncoding];
-  if(message&&message.length>0)
-    [self.messages addObject:message];
-  id err = task.standardError;
-  NSTaskTerminationReason r = task.terminationReason;
-  NSLog(@"%@ %ld %@", err, r, task.launchPath);
+- (void)extractEEPROM:(BOOL)verbose {
+  [self launchTask:[self commandExtractEEPROM] verbose:verbose];
 }
 
-- (void)buildHex {
-  NSPipe *outpipe = [NSPipe pipe];
-  NSTask *task = [self commandBuildHex];
-  [task setStandardOutput:outpipe];
-  [task launch];
-  [task waitUntilExit];
-  NSString* message =
-  [[NSString alloc] initWithData:
-   [[outpipe fileHandleForReading] readDataToEndOfFile]
-                        encoding:NSUTF8StringEncoding];
-  if(message&&message.length>0)
-    [self.messages addObject:message];
-  id err = task.standardError;
-  NSTaskTerminationReason r = task.terminationReason;
-  NSLog(@"%@ %ld", err, r);
+- (void)buildHex:(BOOL)verbose {
+  [self launchTask:[self commandBuildHex] verbose:verbose];
 }
 
 - (NSSet *)compileFiles:(NSString *)sourcePath
@@ -324,57 +279,39 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
                 verbose:(BOOL)verbose {
   NSMutableSet *objects = [NSMutableSet set];
   NSSet *sources = nil;
-  NSPipe *outpipe = nil;
-  NSTask *task = nil;
-  NSString *message = nil;
   NSString *f = nil;
   NSString *o = nil;
   sources = [self fileInPath:sourcePath withExtention:@"S" recursive:NO];
   for (f in sources) {
     o = [self objectNameForSource:f buildPath:buildPath];
-    task = [self commandCompilerS:f object:o includePaths:includePaths verbose:verbose];
-    outpipe = [NSPipe pipe];
-    [task setStandardOutput:outpipe];
-    [task launch];
-    [task waitUntilExit];
-    message =
-    [[NSString alloc] initWithData:
-     [[outpipe fileHandleForReading] readDataToEndOfFile]
-                          encoding:NSUTF8StringEncoding];
-    if(message&&message.length>0)
-      [self.messages addObject:message];
+    [self launchTask:
+     [self commandCompilerS:f
+                     object:o
+               includePaths:includePaths
+                    verbose:verbose]
+             verbose:verbose];
     [objects addObject:o];
   }
   sources = [self fileInPath:sourcePath withExtention:@"c" recursive:NO];
   for (f in sources) {
     o = [self objectNameForSource:f buildPath:buildPath];
-    task = [self commandCompilerC:f object:o includePaths:includePaths verbose:verbose];
-    outpipe = [NSPipe pipe];
-    [task setStandardOutput:outpipe];
-    [task launch];
-    [task waitUntilExit];
-    message =
-    [[NSString alloc] initWithData:
-     [[outpipe fileHandleForReading] readDataToEndOfFile]
-                          encoding:NSUTF8StringEncoding];
-    if(message&&message.length>0)
-      [self.messages addObject:message];
+    [self launchTask:
+             [self commandCompilerC:f
+                             object:o
+                       includePaths:includePaths
+                            verbose:verbose]
+             verbose:verbose];
     [objects addObject:o];
   }
   sources = [self fileInPath:sourcePath withExtention:@"cpp" recursive:NO];
   for (f in sources) {
     o = [self objectNameForSource:f buildPath:buildPath];
-    task = [self commandCompilerCPP:f object:o includePaths:includePaths verbose:verbose];
-    outpipe = [NSPipe pipe];
-    [task setStandardOutput:outpipe];
-    [task launch];
-    [task waitUntilExit];
-    message =
-    [[NSString alloc] initWithData:
-     [[outpipe fileHandleForReading] readDataToEndOfFile]
-                          encoding:NSUTF8StringEncoding];
-    if(message&&message.length>0)
-      [self.messages addObject:message];
+    [self launchTask:
+     [self commandCompilerCPP:f
+                       object:o
+                 includePaths:includePaths
+                      verbose:verbose]
+             verbose:verbose];
     [objects addObject:o];
   }
   return [objects copy];
@@ -390,7 +327,7 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
 }
 
 - (NSString *)objectNameForSource:(NSString *)source buildPath:(NSString *)buildPath {
-  return [source replacePathExtension:@"o" inDirectory:buildPath];
+  return [source replacePathExtension:[source.pathExtension stringByAppendingString:@".o"] inDirectory:buildPath];
 }
 
 - (void)createFolder:(NSString *)path{
@@ -426,6 +363,14 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   [task setArguments:args];
   return task;
 }
+
+// avr-gcc -c -g -Os -Wall -ffunction-sections -fdata-sections
+//   -mmcu=atmega328p -DF_CPU=16000000L -MMD -DUSB_VID=null -DUSB_PID=null
+//   -DARDUINO=101
+//   -I/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino
+//   -I/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/variants/standard
+//   /Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino/WInterrupts.c
+//   -o /var/folders/dh/v8b0d1kj7k1crx8mx5d65bl40000gn/T/build805200626271849655.tmp/WInterrupts.c.o
 
 - (NSTask *)commandCompilerC:(NSString *)source
                       object:(NSString *)object
@@ -489,6 +434,8 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
   [task setArguments:args];
   return task;
 }
+
+// avr-gcc -Os -Wl,--gc-sections -mmcu=atmega328p -o #{name}.cpp.elf #{name}.cpp.o /var/folders/dh/v8b0d1kj7k1crx8mx5d65bl40000gn/T/build805200626271849655.tmp/core.a -L/var/folders/dh/v8b0d1kj7k1crx8mx5d65bl40000gn/T/build805200626271849655.tmp -lm
 
 - (NSTask *)commandLinkerWithObjectFiles:(NSSet *)objects {
   NSString *optRelax = @"";
@@ -558,6 +505,23 @@ NSString *const AVRCompileException = @"org.ngsdev.codaplugin.arduino.AVRCompile
     hex,
     nil]];
   return task;
+}
+
+- (void)launchTask:(NSTask *)task verbose:(BOOL)verbose {
+  NSPipe *outpipe = [NSPipe pipe];
+  [task setStandardOutput:outpipe];
+  if(verbose)
+    [self.messages addObject:
+     [NSString stringWithFormat:@"%@ %@", task.launchPath, [task.arguments componentsJoinedByString:@" "]]];
+  [task launch];
+  [task waitUntilExit];
+  NSString* message =
+  [[NSString alloc] initWithData:
+   [[outpipe fileHandleForReading] readDataToEndOfFile]
+                        encoding:NSUTF8StringEncoding];
+  if(message&&message.length>0)
+    [self.messages addObject:message];
+  
 }
 
 

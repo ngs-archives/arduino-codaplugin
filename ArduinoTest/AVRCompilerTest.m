@@ -115,7 +115,7 @@
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
   STAssertEqualObjects(
                        [compiler objectNameForSource:@"/Users/foo/Path/To/MyArduinoProject/lib/Bar.cpp" buildPath:@"/Users/foo/Path/To/MyArduinoProject/build/libraries"],
-                       @"/Users/foo/Path/To/MyArduinoProject/build/libraries/Bar.o",
+                       @"/Users/foo/Path/To/MyArduinoProject/build/libraries/Bar.cpp.o",
                        nil);
   
   

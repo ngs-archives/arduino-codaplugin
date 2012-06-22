@@ -118,7 +118,7 @@
 - (NSString *)getString:(NSString *)key {
   id obj = [self get:key];
   if(!obj || ![obj isKindOfClass:[NSString class]])
-    obj = @"";
+    obj = @"null";
   return obj;
 }
 
