@@ -62,7 +62,7 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
                                   target:self
                                 selector:@selector(compile:)
                        representedObject:nil
-                           keyEquivalent:@"$@B"
+                           keyEquivalent:@"^$@B"
                               pluginName:self.name];
     
     [aController registerActionWithTitle:NSLocalizedString(@"Serial Monotor", nil)
@@ -91,7 +91,7 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
-  if(aSelector == @selector(upload:) || aSelector == @selector(comppile:)) {
+  if(aSelector == @selector(upload:) || aSelector == @selector(compile:)) {
     NSString *path = [self.pluginController focusedTextView:self].path;
     return [path hasSuffix:@".ino"] || [path hasSuffix:@".pde"];
   }
@@ -114,14 +114,22 @@ NSString *const ArduinoPluginSerialPortKey = @"ArduinoPluginSerialPort";
   [compiler
    compile:YES
    withProgressHandler:^(double progress) {
+     NSArray *messages = [compiler.messages copy];
      [self.progressWindowController.progresIndicator setDoubleValue:progress];
-     [self.progressWindowController setOutputText:[compiler.messages componentsJoinedByString:@"\n"]];
+     [self.progressWindowController setOutputText:[messages componentsJoinedByString:@"\n"]];
    }
    completeHandler:^{
+     NSArray *messages = [compiler.messages copy];
      [self.progressWindowController.progresIndicator setDoubleValue:1.0];
-     [self.progressWindowController setOutputText:[compiler.messages componentsJoinedByString:@"\n"]];
+     [self.progressWindowController setOutputText:[messages componentsJoinedByString:@"\n"]];
+   }
+   errorHandler:^(NSError *error) {
+     NSArray *messages = [compiler.messages copy];
+     [self.progressWindowController.progresIndicator setDoubleValue:1.0];
+     [self.progressWindowController setOutputText:[messages componentsJoinedByString:@"\n"]];
+     NSRange range = [self.progressWindowController.outputText rangeOfString:[error.userInfo valueForKey:@"message"]];
+     [self.progressWindowController.outputTextView setTextColor:[NSColor redColor] range:range];
    }];
-  
 }
 
 - (void)openSerialMonitor:(id)sender {

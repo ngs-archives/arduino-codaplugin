@@ -21,6 +21,7 @@ extern NSString *const AVRCompileException;
 @property (nonatomic) dispatch_queue_t buildQueue;
 @property (copy) void (^progressHandler) (double progress);
 @property (copy) void (^completeHandler) (void);
+@property (copy) void (^errorHandler) (NSError *error);
 @property (nonatomic) double currentProgress;
 
 - (NSString *)corePath;
@@ -45,7 +46,10 @@ extern NSString *const AVRCompileException;
 - (id)initWithPath:(NSString *)path
   boardPreferences:(P5Preferences *)boardPreferences;
 
-- (BOOL)compile:(BOOL)verbose withProgressHandler:(void (^)(double progress))progressHandler completeHandler:(void (^)(void))completeHandler;
+- (BOOL)compile:(BOOL)verbose
+withProgressHandler:(void (^)(double progress))progressHandler
+completeHandler:(void (^)(void))completeHandler
+   errorHandler:(void (^)(NSError *error))errorHandler;
 
 - (NSSet *)fileInPath:(NSString *)path
           withExtention:(NSString *)extention
