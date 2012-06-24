@@ -23,6 +23,11 @@
 		8541DDB71592D80F00C6936E /* AVRCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D296BA15752F920078F4F8 /* AVRCompiler.m */; };
 		854C33B5159439B6008AE0C0 /* ProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 854C33B3159439B6008AE0C0 /* ProgressWindowController.m */; };
 		854C33B6159439B6008AE0C0 /* ProgressWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 854C33B4159439B6008AE0C0 /* ProgressWindow.xib */; };
+		85755FB31595AED40054291D /* AVRDudeUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 85755FB21595AED40054291D /* AVRDudeUploader.m */; };
+		85755FB71595D60E0054291D /* AVRTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 85755FB61595D60E0054291D /* AVRTool.m */; };
+		85755FB81595D81B0054291D /* ProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 854C33B3159439B6008AE0C0 /* ProgressWindowController.m */; };
+		85755FB91595D81B0054291D /* AVRDudeUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 85755FB21595AED40054291D /* AVRDudeUploader.m */; };
+		85755FBA1595D81B0054291D /* AVRTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 85755FB61595D60E0054291D /* AVRTool.m */; };
 		85AF884C156FEED800B20241 /* ArduinoPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 85AF884B156FEED800B20241 /* ArduinoPlugin.m */; };
 		85B909571574B99700B48051 /* SettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B909551574B99700B48051 /* SettingsWindowController.m */; };
 		85B909581574B99700B48051 /* SettingsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85B909561574B99700B48051 /* SettingsWindow.xib */; };
@@ -60,6 +65,10 @@
 		854C33B2159439B6008AE0C0 /* ProgressWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressWindowController.h; sourceTree = "<group>"; };
 		854C33B3159439B6008AE0C0 /* ProgressWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressWindowController.m; sourceTree = "<group>"; };
 		854C33B4159439B6008AE0C0 /* ProgressWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressWindow.xib; sourceTree = "<group>"; };
+		85755FB11595AED40054291D /* AVRDudeUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVRDudeUploader.h; sourceTree = "<group>"; };
+		85755FB21595AED40054291D /* AVRDudeUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVRDudeUploader.m; sourceTree = "<group>"; };
+		85755FB51595D60E0054291D /* AVRTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVRTool.h; sourceTree = "<group>"; };
+		85755FB61595D60E0054291D /* AVRTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVRTool.m; sourceTree = "<group>"; };
 		85AF87EC156FED4F00B20241 /* Arduino.codaplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Arduino.codaplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		85AF87F7156FED4F00B20241 /* Arduino-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Arduino-Info.plist"; sourceTree = "<group>"; };
 		85AF87FB156FED4F00B20241 /* Arduino-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Arduino-Prefix.pch"; sourceTree = "<group>"; };
@@ -292,6 +301,10 @@
 				85D2964A1574C6F90078F4F8 /* P5Preferences.m */,
 				85D296B915752F920078F4F8 /* AVRCompiler.h */,
 				85D296BA15752F920078F4F8 /* AVRCompiler.m */,
+				85755FB11595AED40054291D /* AVRDudeUploader.h */,
+				85755FB21595AED40054291D /* AVRDudeUploader.m */,
+				85755FB51595D60E0054291D /* AVRTool.h */,
+				85755FB61595D60E0054291D /* AVRTool.m */,
 			);
 			name = Integration;
 			sourceTree = "<group>";
@@ -428,6 +441,8 @@
 				85D296BB15752F920078F4F8 /* AVRCompiler.m in Sources */,
 				85D8E6D71593C13700358BBE /* NSString+extension.m in Sources */,
 				854C33B5159439B6008AE0C0 /* ProgressWindowController.m in Sources */,
+				85755FB31595AED40054291D /* AVRDudeUploader.m in Sources */,
+				85755FB71595D60E0054291D /* AVRTool.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,6 +450,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85755FB81595D81B0054291D /* ProgressWindowController.m in Sources */,
+				85755FB91595D81B0054291D /* AVRDudeUploader.m in Sources */,
+				85755FBA1595D81B0054291D /* AVRTool.m in Sources */,
 				85D8E6DB1593C22800358BBE /* NSString+extension.m in Sources */,
 				8541DDB21592D80F00C6936E /* SettingsWindowController.m in Sources */,
 				8541DDB31592D80F00C6936E /* ArduinoPlugin.m in Sources */,

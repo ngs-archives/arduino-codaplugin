@@ -40,8 +40,7 @@
   NSString *path = [testBundle pathForNamedAsset:@"Sample.ino"];
   AVRCompiler *compiler = [[AVRCompiler alloc] initWithPath:path boardPreferences:nil];
   
-  
-  STAssertEqualObjects(compiler.buildPath, [[testBundle bundlePath] stringByAppendingString:@"/Contents/Resources/build"], nil);
+  STAssertTrue([compiler.buildPath hasPrefix:NSTemporaryDirectory()], nil);
   
   STAssertEqualObjects(compiler.arduinoPath, @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino", nil);
   STAssertEqualObjects(compiler.corePath, @"/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/cores/arduino", nil);
