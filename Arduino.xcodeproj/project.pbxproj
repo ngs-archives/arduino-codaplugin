@@ -69,7 +69,7 @@
 		85755FB21595AED40054291D /* AVRDudeUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVRDudeUploader.m; sourceTree = "<group>"; };
 		85755FB51595D60E0054291D /* AVRTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVRTool.h; sourceTree = "<group>"; };
 		85755FB61595D60E0054291D /* AVRTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVRTool.m; sourceTree = "<group>"; };
-		85AF87EC156FED4F00B20241 /* Arduino.codaplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Arduino.codaplugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		85AF87EC156FED4F00B20241 /* .bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = .bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		85AF87F7156FED4F00B20241 /* Arduino-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Arduino-Info.plist"; sourceTree = "<group>"; };
 		85AF87FB156FED4F00B20241 /* Arduino-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Arduino-Prefix.pch"; sourceTree = "<group>"; };
 		85AF884A156FEED800B20241 /* ArduinoPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArduinoPlugin.h; sourceTree = "<group>"; };
@@ -199,7 +199,7 @@
 		85AF87ED156FED4F00B20241 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				85AF87EC156FED4F00B20241 /* Arduino.codaplugin */,
+				85AF87EC156FED4F00B20241 /* .bundle */,
 				85D296521574C80F0078F4F8 /* ArduinoTest.octest */,
 			);
 			name = Products;
@@ -327,7 +327,7 @@
 			);
 			name = Arduino;
 			productName = Arduino;
-			productReference = 85AF87EC156FED4F00B20241 /* Arduino.codaplugin */;
+			productReference = 85AF87EC156FED4F00B20241 /* .bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		85D296511574C80F0078F4F8 /* ArduinoTest */ = {
