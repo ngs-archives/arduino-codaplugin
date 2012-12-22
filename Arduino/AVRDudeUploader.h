@@ -18,7 +18,8 @@
 
 - (BOOL)uploadUsingPreferences:(BOOL)usingProgrammer;
 - (BOOL)uploadViaBootloader;
-- (BOOL)burnBootloader;
+- (BOOL)burnBootloader:(NSArray *)params verbose:(BOOL)verbose;
+- (NSTask *)avrdude:(NSArray *)params verbose:(BOOL)verbose;
 
 
 

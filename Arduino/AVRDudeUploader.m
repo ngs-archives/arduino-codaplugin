@@ -58,14 +58,24 @@
 }
 
 - (BOOL)uploadUsingPreferences:(BOOL)usingProgrammer {
-  return YES;
+  if(usingProgrammer || [self.boardPreferences getString:@"upload.protocol"] == nil) {
+    NSString *programmer = [self.boardPreferences getString:@"programmer"];
+    
+    NSRange range = [programmer rangeOfString:@":"];
+    if(range.location != NSNotFound) {
+      programmer = [programmer substringToIndex:range.location];
+      
+    }
+    
+  }
+  return [self uploadViaBootloader];
 }
 
 - (BOOL)uploadViaBootloader {
   return YES;
 }
 
-- (BOOL)burnBootloader {
+- (BOOL)burnBootloader:(NSArray *)params verbose:(BOOL)verbose {
   return YES;
 }
 
